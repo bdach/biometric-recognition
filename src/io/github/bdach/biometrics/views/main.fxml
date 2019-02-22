@@ -1,0 +1,47 @@
+<?import io.github.bdach.biometrics.presentation.RecognitionType?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<BorderPane fx:controller="io.github.bdach.biometrics.Controller"
+            xmlns:fx="http://javafx.com/fxml">
+    <top>
+        <ToolBar>
+            <Button fx:id="addButton"
+                    text="Add record..." />
+            <Button fx:id="recognizeButton"
+                    text="Recognize..." />
+            <Pane HBox.hgrow="ALWAYS" />
+            <ComboBox fx:id="typeChoiceBox">
+                <value>
+                    <RecognitionType fx:value="IRIS" />
+                </value>
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <RecognitionType fx:value="IRIS" />
+                        <RecognitionType fx:value="VOICE" />
+                        <RecognitionType fx:value="FACE" />
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </ToolBar>
+    </top>
+    <center>
+        <ListView fx:id="recordListView" />
+    </center>
+    <right>
+
+    </right>
+    <bottom>
+        <ToolBar>
+            <HBox spacing="5">
+                <ProgressBar fx:id="taskProgressBar"
+                             progress="0"
+                             prefWidth="150" />
+                <Label fx:id="taskProgressLabel"
+                       text="Ready." />
+            </HBox>
+        </ToolBar>
+    </bottom>
+</BorderPane>
