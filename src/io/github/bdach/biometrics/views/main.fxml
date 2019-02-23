@@ -36,15 +36,4 @@
     <right>
 
     </right>
-    <bottom>
-        <ToolBar>
-            <HBox spacing="5">
-                <ProgressBar fx:id="taskProgressBar"
-                             progress="0"
-                             prefWidth="150" />
-                <Label fx:id="taskProgressLabel"
-                       text="Ready." />
-            </HBox>
-        </ToolBar>
-    </bottom>
 </BorderPane>

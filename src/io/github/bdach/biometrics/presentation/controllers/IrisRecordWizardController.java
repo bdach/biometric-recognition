@@ -1,6 +1,8 @@
 package io.github.bdach.biometrics.presentation.controllers;
 
 import io.github.bdach.biometrics.model.IrisRecord;
+import io.github.bdach.biometrics.presentation.dialogs.TaskProgressDialog;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -34,8 +36,7 @@ public class IrisRecordWizardController implements RecordWizardController<IrisRe
         primaryStage.close();
     }
 
-    @FXML
-    public void create() {
+    public String validate() {
         StringBuilder errorMessageBuilder = new StringBuilder();
 
         String title = titleTextField.getText();
@@ -44,13 +45,38 @@ public class IrisRecordWizardController implements RecordWizardController<IrisRe
         if (chosenImage == null)
             errorMessageBuilder.append("Please select an iris image.\n");
 
-        if (errorMessageBuilder.length() > 0)
+        return errorMessageBuilder.toString();
+    }
+
+    public void processRecord() {
+        Task<IrisRecord> task = new Task<IrisRecord>() {
+            @Override
+            protected IrisRecord call() throws Exception {
+                updateProgress(0, 1200);
+                updateMessage("Frobulating the foobar...");
+                Thread.sleep(500);
+                updateProgress(500, 1200);
+                updateMessage("Bazzing the quux...");
+                Thread.sleep(700);
+                updateProgress(1200, 1200);
+                return new IrisRecord(titleTextField.getText(), chosenImage);
+            }
+        };
+        TaskProgressDialog<IrisRecord> dialog = new TaskProgressDialog<>(task);
+        dialog.showDialog(primaryStage);
+        dialog.getResult().ifPresent(record -> irisRecord = record);
+    }
+
+    @FXML
+    public void create() {
+        String errors = validate();
+        if (errors.length() > 0)
         {
-            Alert alert = new Alert(Alert.AlertType.ERROR, errorMessageBuilder.toString(), ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.ERROR, errors, ButtonType.OK);
             alert.showAndWait();
             return;
         }
-        irisRecord = new IrisRecord(title, chosenImage);
+        processRecord();
         primaryStage.close();
     }
 

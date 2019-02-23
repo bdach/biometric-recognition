@@ -18,7 +18,7 @@ public abstract class Dialog<TController extends Controller> {
 
     protected void setUpDialog() { }
 
-    protected void showDialog(Stage parentStage) {
+    public void showDialog(Stage parentStage) {
         stage = new Stage();
         String resourceName = getResourceName();
         Parent root;
