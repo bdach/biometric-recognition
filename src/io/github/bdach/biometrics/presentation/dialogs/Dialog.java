@@ -16,6 +16,8 @@ public abstract class Dialog<TController extends Controller> {
     protected TController controller;
     protected Stage stage;
 
+    protected void setUpDialog() { }
+
     protected void showDialog(Stage parentStage) {
         stage = new Stage();
         String resourceName = getResourceName();
@@ -32,6 +34,7 @@ public abstract class Dialog<TController extends Controller> {
         stage.setTitle(getTitle());
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.initOwner(parentStage);
+        setUpDialog();
         stage.showAndWait();
     }
 }

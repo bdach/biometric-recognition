@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="box">
+    <center>
+        <VBox>
+            <Label fx:id="titleLabel"
+                   text="Title">
+                <font>
+                    <Font size="16" />
+                </font>
+            </Label>
+            <Label fx:id="dateLabel"
+                   text="Date" />
+        </VBox>
+    </center>
+    <right>
+        <VBox alignment="CENTER_RIGHT">
+            <Label fx:id="resultLabel"
+                   text="0">
+                <font>
+                    <Font size="32" />
+                </font>
+            </Label>
+        </VBox>
+    </right>
+</BorderPane>

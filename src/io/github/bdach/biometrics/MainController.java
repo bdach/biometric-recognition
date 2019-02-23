@@ -5,6 +5,8 @@ import io.github.bdach.biometrics.model.RecognitionType;
 import io.github.bdach.biometrics.model.Record;
 import io.github.bdach.biometrics.presentation.RecordListCell;
 import io.github.bdach.biometrics.presentation.controllers.RecordDetailController;
+import io.github.bdach.biometrics.presentation.dialogs.IrisRecognitionResultDialog;
+import io.github.bdach.biometrics.presentation.dialogs.IrisRecordWizardDialog;
 import io.github.bdach.biometrics.presentation.dialogs.RecordWizardDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -16,6 +18,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class MainController implements Controller {
     @Setter
     private Stage primaryStage;
@@ -25,21 +30,35 @@ public class MainController implements Controller {
     @FXML private Button addButton;
     @FXML private ComboBox<RecognitionType> typeChoiceBox;
 
+    private ObservableList<Record> irisRecords = FXCollections.observableArrayList();
+
     @FXML
     private void add() {
-        Record newRecord = RecordWizardDialog.create(primaryStage, typeChoiceBox.getValue());
-        if (newRecord != null)
-            recordListView.getItems().add(newRecord);
+        switch (typeChoiceBox.getValue()) {
+            case IRIS:
+                IrisRecord newRecord = new IrisRecordWizardDialog().create(primaryStage);
+                if (newRecord != null)
+                    irisRecords.add(newRecord);
+                break;
+        }
+    }
+
+    @FXML
+    public void recognize() {
+        switch (typeChoiceBox.getValue()) {
+            case IRIS:
+                IrisRecognitionResultDialog dialog = new IrisRecognitionResultDialog();
+                List<IrisRecord> irisRecords = this.irisRecords.stream()
+                        .map(IrisRecord.class::cast)
+                        .collect(Collectors.toList());
+                dialog.recognize(primaryStage, irisRecords);
+                break;
+        }
     }
 
     private void setUpRecordList() {
-        ObservableList<Record> collection = FXCollections.observableArrayList(
-                new IrisRecord("abc"),
-                new IrisRecord("def"),
-                new IrisRecord("ghi")
-        );
         recordListView.setCellFactory(v -> new RecordListCell());
-        recordListView.setItems(collection);
+        recordListView.setItems(irisRecords);
         recordListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldVal, newVal) -> {
                     RecordDetailController<? extends Record> controller = RecordDetailController.create(newVal);

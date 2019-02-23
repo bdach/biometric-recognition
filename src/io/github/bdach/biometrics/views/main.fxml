@@ -13,6 +13,7 @@
                     onAction="#add"
                     text="Add record..." />
             <Button fx:id="recognizeButton"
+                    onAction="#recognize"
                     text="Recognize..." />
             <Pane HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="typeChoiceBox">

@@ -9,10 +9,6 @@ public class IrisRecord extends Record {
     @Getter
     private final Image sourceImage;
 
-    public IrisRecord(String name) {
-        this(name, null);
-    }
-
     public IrisRecord(String name, Image image) {
         super(name);
         sourceImage = image;
