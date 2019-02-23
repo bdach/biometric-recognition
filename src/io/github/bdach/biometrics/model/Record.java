@@ -1,11 +1,11 @@
 package io.github.bdach.biometrics.model;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @RequiredArgsConstructor
+@EqualsAndHashCode
 public abstract class Record {
     @Getter
     private final String name;
@@ -16,4 +16,6 @@ public abstract class Record {
         this.name = name;
         this.creationDate = LocalDateTime.now();
     }
+
+    public abstract RecognitionType getType();
 }

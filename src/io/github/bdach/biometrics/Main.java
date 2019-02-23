@@ -12,7 +12,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("views/main.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("views/main.fxml"));
+        Parent root = loader.load();
+        MainController controller = loader.getController();
+        controller.setPrimaryStage(primaryStage);
         primaryStage.setTitle("Biometric human recognition");
         primaryStage.setScene(new Scene(root, 1280, 720));
         primaryStage.setMinWidth(640);

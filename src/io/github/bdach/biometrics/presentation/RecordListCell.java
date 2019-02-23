@@ -8,8 +8,10 @@ public class RecordListCell extends ListCell<Record> {
     @Override
     public void updateItem(Record item, boolean empty) {
         super.updateItem(item, empty);
-        if (item == null)
+        if (item == null || empty) {
+            setGraphic(null);
             return;
+        }
         RecordViewController controller = new RecordViewController();
         controller.setRecord(item);
         setGraphic(controller.getBox());

@@ -1,14 +1,16 @@
-<?import io.github.bdach.biometrics.presentation.RecognitionType?>
+<?import io.github.bdach.biometrics.model.RecognitionType?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<BorderPane fx:controller="io.github.bdach.biometrics.Controller"
-            xmlns:fx="http://javafx.com/fxml">
+<BorderPane fx:controller="io.github.bdach.biometrics.MainController"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:id="mainBorderPane">
     <top>
         <ToolBar>
             <Button fx:id="addButton"
+                    onAction="#add"
                     text="Add record..." />
             <Button fx:id="recognizeButton"
                     text="Recognize..." />

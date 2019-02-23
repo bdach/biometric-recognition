@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="io.github.bdach.biometrics.presentation.controllers.IrisRecordWizardController"
+            prefHeight="400.0" prefWidth="600.0">
+    <center>
+        <GridPane hgap="10" vgap="10">
+            <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" />
+                <ColumnConstraints hgrow="ALWAYS" />
+            </columnConstraints>
+            <padding>
+                <Insets topRightBottomLeft="10" />
+            </padding>
+            <Label text="Title"
+                   GridPane.rowIndex="0"
+                   GridPane.columnIndex="0" />
+            <TextField fx:id="titleTextField"
+                       GridPane.rowIndex="0"
+                       GridPane.columnIndex="1" />
+            <Label text="Iris image"
+                   GridPane.rowIndex="1"
+                   GridPane.columnIndex="0" />
+            <HBox GridPane.rowIndex="1"
+                  GridPane.columnIndex="1"
+                  spacing="10"
+                  alignment="CENTER_LEFT">
+                <Button onAction="#browse"
+                        text="Browse..." />
+                <Label fx:id="imagePathLabel" />
+            </HBox>
+            <ImageView fx:id="chosenImageView"
+                       fitWidth="280"
+                       preserveRatio="true"
+                       GridPane.rowIndex="2"
+                       GridPane.columnIndex="1" />
+        </GridPane>
+    </center>
+    <bottom>
+        <ButtonBar>
+            <padding>
+                <Insets topRightBottomLeft="10" />
+            </padding>
+            <buttons>
+                <Button onAction="#create"
+                        text="Create"
+                        defaultButton="true"
+                        ButtonBar.buttonData="OK_DONE" />
+                <Button onAction="#cancel"
+                        text="Cancel"
+                        cancelButton="true"
+                        ButtonBar.buttonData="CANCEL_CLOSE" />
+            </buttons>
+        </ButtonBar>
+    </bottom>
+</BorderPane>

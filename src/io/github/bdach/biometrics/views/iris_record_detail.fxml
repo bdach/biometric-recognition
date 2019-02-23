@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:id="mainPane"
+      prefWidth="300.0"
+      spacing="10">
+    <padding>
+        <Insets topRightBottomLeft="10" />
+    </padding>
+    <Label fx:id="titleLabel"
+           text="Title">
+        <font>
+            <Font size="16" />
+        </font>
+    </Label>
+    <Label fx:id="dateLabel"
+           text="Date" />
+    <TitledPane text="Iris image">
+        <ImageView fx:id="irisImageView"
+                   fitWidth="280"
+                   preserveRatio="true"/>
+    </TitledPane>
+</VBox>

@@ -1,4 +1,4 @@
-package io.github.bdach.biometrics.presentation;
+package io.github.bdach.biometrics.model;
 
 public enum RecognitionType {
     IRIS("Iris"),
