@@ -18,6 +18,7 @@ public class IrisRecordDetailController extends RecordDetailController<IrisRecor
     @FXML private Label titleLabel;
     @FXML private Label dateLabel;
     @FXML private ImageView irisImageView;
+    @FXML private ImageView unwrappedIrisImageView;
 
     public IrisRecordDetailController(IrisRecord record) {
         super(record);
@@ -37,5 +38,6 @@ public class IrisRecordDetailController extends RecordDetailController<IrisRecor
         dateLabel.setText(record.getCreationDate()
             .format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         irisImageView.setImage(record.getSourceImage());
+        unwrappedIrisImageView.setImage(record.getUnwrappedImage());
     }
 }

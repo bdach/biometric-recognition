@@ -1,14 +1,16 @@
 package io.github.bdach.biometrics.presentation.controllers;
 
+import io.github.bdach.biometrics.algorithms.image.iris.IrisRecognitionTask;
 import io.github.bdach.biometrics.model.IrisRecord;
 import io.github.bdach.biometrics.presentation.dialogs.TaskProgressDialog;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import lombok.Setter;
@@ -49,19 +51,7 @@ public class IrisRecordWizardController implements RecordWizardController<IrisRe
     }
 
     public void processRecord() {
-        Task<IrisRecord> task = new Task<IrisRecord>() {
-            @Override
-            protected IrisRecord call() throws Exception {
-                updateProgress(0, 1200);
-                updateMessage("Frobulating the foobar...");
-                Thread.sleep(500);
-                updateProgress(500, 1200);
-                updateMessage("Bazzing the quux...");
-                Thread.sleep(700);
-                updateProgress(1200, 1200);
-                return new IrisRecord(titleTextField.getText(), chosenImage);
-            }
-        };
+        Task<IrisRecord> task = new IrisRecognitionTask(titleTextField.getText(), chosenImage);
         TaskProgressDialog<IrisRecord> dialog = new TaskProgressDialog<>(task);
         dialog.showDialog(primaryStage);
         dialog.getResult().ifPresent(record -> irisRecord = record);

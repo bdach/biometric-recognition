@@ -8,10 +8,13 @@ import lombok.Getter;
 public class IrisRecord extends Record {
     @Getter
     private final Image sourceImage;
+    @Getter
+    private final Image unwrappedImage;
 
-    public IrisRecord(String name, Image image) {
+    public IrisRecord(String name, Image sourceImage, Image unwrappedImage) {
         super(name);
-        sourceImage = image;
+        this.sourceImage = sourceImage;
+        this.unwrappedImage = unwrappedImage;
     }
 
     @Override
