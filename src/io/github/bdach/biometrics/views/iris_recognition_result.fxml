@@ -19,6 +19,9 @@
             <ImageView fx:id="originalImageView"
                        fitWidth="250"
                        preserveRatio="true" />
+            <ImageView fx:id="originalCodeImageView"
+                       fitWidth="250"
+                       preserveRatio="true" />
         </VBox>
     </left>
     <center>
@@ -39,6 +42,9 @@
             </padding>
             <Label text="Comparison" />
             <ImageView fx:id="comparedImageView"
+                       fitWidth="250"
+                       preserveRatio="true" />
+            <ImageView fx:id="comparedCodeImageView"
                        fitWidth="250"
                        preserveRatio="true" />
         </VBox>

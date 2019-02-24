@@ -32,4 +32,9 @@
                    fitWidth="280"
                    preserveRatio="true"/>
     </TitledPane>
+    <TitledPane text="Iris code">
+        <ImageView fx:id="codeImageView"
+                   fitWidth="280"
+                   preserveRatio="true"/>
+    </TitledPane>
 </VBox>

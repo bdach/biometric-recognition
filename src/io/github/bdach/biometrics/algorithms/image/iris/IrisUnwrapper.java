@@ -31,9 +31,9 @@ class IrisUnwrapper {
         for (int y = 0; y < HEIGHT; ++y) {
             for (int x = 0; x < WIDTH; ++x) {
                 pixelCount += 1;
-                double r = (double) y / HEIGHT;
+                double r = 1 - (double) y / HEIGHT;
                 double phi = ((double) x / WIDTH) * 2 * Math.PI;
-                Color color = sampleOutputPixel(pixelReader, r, phi);
+                Color color = sampleOutputPixel(pixelReader, r, phi - Math.PI / 2);
                 pixelWriter.setColor(x, y, color);
             }
         }

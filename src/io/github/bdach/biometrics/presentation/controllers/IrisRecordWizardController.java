@@ -1,6 +1,6 @@
 package io.github.bdach.biometrics.presentation.controllers;
 
-import io.github.bdach.biometrics.algorithms.image.iris.IrisRecognitionTask;
+import io.github.bdach.biometrics.algorithms.image.iris.IrisRecordTask;
 import io.github.bdach.biometrics.model.IrisRecord;
 import io.github.bdach.biometrics.presentation.dialogs.TaskProgressDialog;
 import javafx.concurrent.Task;
@@ -51,7 +51,7 @@ public class IrisRecordWizardController implements RecordWizardController<IrisRe
     }
 
     public void processRecord() {
-        Task<IrisRecord> task = new IrisRecognitionTask(titleTextField.getText(), chosenImage);
+        Task<IrisRecord> task = new IrisRecordTask(titleTextField.getText(), chosenImage);
         TaskProgressDialog<IrisRecord> dialog = new TaskProgressDialog<>(task);
         dialog.showDialog(primaryStage);
         dialog.getResult().ifPresent(record -> irisRecord = record);
@@ -78,6 +78,7 @@ public class IrisRecordWizardController implements RecordWizardController<IrisRe
             return;
         chosenImage = new Image(file.toURI().toString());
         imagePathLabel.setText(file.toString());
+        titleTextField.setText(file.getName());
         chosenImageView.setImage(chosenImage);
     }
 }

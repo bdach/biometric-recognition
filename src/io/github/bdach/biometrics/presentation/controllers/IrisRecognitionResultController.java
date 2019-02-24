@@ -20,6 +20,8 @@ public class IrisRecognitionResultController implements RecognitionResultControl
     @FXML public ListView<IrisRecognitionResult> comparisonResultListView;
     @FXML public ImageView originalImageView;
     @FXML public ImageView comparedImageView;
+    @FXML public ImageView originalCodeImageView;
+    @FXML public ImageView comparedCodeImageView;
 
     @FXML
     public void initialize() {
@@ -27,6 +29,7 @@ public class IrisRecognitionResultController implements RecognitionResultControl
         comparisonResultListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     comparedImageView.setImage(newValue.getRecord().getSourceImage());
+                    comparedCodeImageView.setImage(newValue.getRecord().getCodeImage());
                 }
         );
     }
@@ -38,5 +41,9 @@ public class IrisRecognitionResultController implements RecognitionResultControl
 
     public void setRecognizedImage(Image recognizedImage) {
         originalImageView.setImage(recognizedImage);
+    }
+
+    public void setCodeImage(Image comparedCodeImage) {
+        originalCodeImageView.setImage(comparedCodeImage);
     }
 }

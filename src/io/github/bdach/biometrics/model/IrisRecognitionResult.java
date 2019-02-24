@@ -13,7 +13,7 @@ public class IrisRecognitionResult extends RecognitionResult<IrisRecord> impleme
 
     @Override
     public int compareTo(IrisRecognitionResult o) {
-        return -Integer.compare(this.hammingDistance, o.hammingDistance);
+        return Integer.compare(this.hammingDistance, o.hammingDistance);
     }
 
     @Override
