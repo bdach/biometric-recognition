@@ -29,7 +29,7 @@ public abstract class IrisProcessingTask<T> extends Task<T> {
 
         updateMessage("Generating code...");
         updateProgress(2, 4);
-        GaborWaveletTransform transformer = new GaborWaveletTransform(4 * Math.PI);
+        GaborWaveletTransform transformer = new GaborWaveletTransform();
         IrisCodeGenerator generator = new IrisCodeGenerator(unwrappedImage, transformer);
         boolean[] code = generator.getCode();
 

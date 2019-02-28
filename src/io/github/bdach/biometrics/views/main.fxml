@@ -28,6 +28,8 @@
                     </FXCollections>
                 </items>
             </ComboBox>
+            <Button onAction="#settings"
+                    text="Settings..." />
         </ToolBar>
     </top>
     <center>

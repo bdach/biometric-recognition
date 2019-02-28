@@ -8,8 +8,10 @@ import io.github.bdach.biometrics.presentation.controllers.RecordDetailControlle
 import io.github.bdach.biometrics.presentation.dialogs.IrisRecognitionResultDialog;
 import io.github.bdach.biometrics.presentation.dialogs.IrisRecordWizardDialog;
 import io.github.bdach.biometrics.presentation.dialogs.RecordWizardDialog;
+import io.github.bdach.biometrics.presentation.dialogs.SettingsDialog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -54,6 +56,12 @@ public class MainController implements Controller {
                 dialog.recognize(primaryStage, irisRecords);
                 break;
         }
+    }
+
+    @FXML
+    public void settings() {
+        SettingsDialog dialog = new SettingsDialog();
+        dialog.showDialog(primaryStage);
     }
 
     private void setUpRecordList() {

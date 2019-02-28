@@ -1,12 +1,14 @@
 package io.github.bdach.biometrics.algorithms.image.iris;
 
+import io.github.bdach.biometrics.model.Settings;
+
 public class GaborWaveletTransform {
     private final double f;
     private final double sigma;
 
-    public GaborWaveletTransform(double frequency) {
-        this.f = frequency;
-        this.sigma = 0.5 * Math.PI * frequency;
+    public GaborWaveletTransform() {
+        this.f = Settings.getInstance().getGaborWaveletFrequency();
+        this.sigma = 0.5 * Math.PI * f;
     }
 
     public ComplexNumber[] transform(double[] data, int sampleCount) {
