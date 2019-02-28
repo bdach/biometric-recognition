@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
@@ -59,6 +60,12 @@ public class MainController implements Controller {
     }
 
     @FXML
+    public void delete() {
+        ObservableList<Record> selectedItems = recordListView.getSelectionModel().getSelectedItems();
+        recordListView.getItems().removeAll(selectedItems);
+    }
+
+    @FXML
     public void settings() {
         SettingsDialog dialog = new SettingsDialog();
         dialog.showDialog(primaryStage);
@@ -70,7 +77,8 @@ public class MainController implements Controller {
         recordListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldVal, newVal) -> {
                     RecordDetailController<? extends Record> controller = RecordDetailController.create(newVal);
-                    mainBorderPane.setRight(controller.getMainPane());
+                    Node mainPane = controller != null ? controller.getMainPane() : null;
+                    mainBorderPane.setRight(mainPane);
                 }
         );
     }
