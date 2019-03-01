@@ -19,7 +19,7 @@ public class GaborWaveletTransform {
             ComplexNumber result = new ComplexNumber();
             for (int i = 0; i < sampleCount; ++i) {
                 double sample = samples[i];
-                double expTerm = Math.exp(-Math.pow(i - k, 2) / sigma);
+                double expTerm = Math.exp(-Math.pow(i - k, 2) / Math.pow(sigma, 2));
                 double complexArg = -2 * Math.PI * f * i;
                 double realTerm = Math.cos(complexArg);
                 double imaginaryTerm = Math.sin(complexArg);
