@@ -10,7 +10,7 @@ public abstract class IrisProcessingTask<T> extends Task<T> {
 
     protected Image unwrappedImage;
 
-    protected abstract T process(boolean[] code);
+    protected abstract T process(boolean[][] codes);
 
     @Override
     protected T call() throws Exception {
@@ -31,11 +31,11 @@ public abstract class IrisProcessingTask<T> extends Task<T> {
         updateProgress(2, 4);
         GaborWaveletTransform transformer = new GaborWaveletTransform();
         IrisCodeGenerator generator = new IrisCodeGenerator(unwrappedImage, transformer);
-        boolean[] code = generator.getCode();
+        boolean[][] codes = generator.getCodes();
 
         updateMessage("Processing code...");
         updateProgress(3, 4);
-        T result = process(code);
+        T result = process(codes);
 
         updateMessage("Done.");
         updateProgress(4, 4);

@@ -17,18 +17,29 @@ public class IrisRecognitionTask extends IrisProcessingTask<IrisRecognitionResul
     }
 
     @Override
-    protected IrisRecognitionResults process(boolean[] code) {
+    protected IrisRecognitionResults process(boolean[][] codes) {
         List<IrisRecognitionResult> resultList = records.stream()
-                .map(record -> compare(record, code))
+                .map(record -> compare(record, codes))
                 .sorted()
                 .collect(Collectors.toList());
-        Image codeVisualization = IrisCodeGenerator.getCodeVisualization(code);
+        Image codeVisualization = IrisCodeGenerator.getCodeVisualization(codes[4]);
         return new IrisRecognitionResults(codeVisualization, resultList);
     }
 
-    private IrisRecognitionResult compare(IrisRecord record, boolean[] code) {
-        int distance = calculateHammingDistance(record.getCode(), code);
+    private IrisRecognitionResult compare(IrisRecord record, boolean[][] codes) {
+        int distance = compare(record.getCodes(), codes);
         return new IrisRecognitionResult(record, distance);
+    }
+
+    private int compare(boolean[][] firstCodes, boolean[][] secondCodes) {
+        int bestDistance = Integer.MAX_VALUE;
+        for (boolean[] firstCode : firstCodes) {
+            for (boolean[] secondCode : secondCodes) {
+                int distance = calculateHammingDistance(firstCode, secondCode);
+                bestDistance = Math.min(bestDistance, distance);
+            }
+        }
+        return bestDistance;
     }
 
     private int calculateHammingDistance(boolean[] first, boolean[] second) {

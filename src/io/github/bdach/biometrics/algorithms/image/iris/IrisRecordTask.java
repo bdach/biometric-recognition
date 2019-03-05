@@ -12,13 +12,13 @@ public class IrisRecordTask extends IrisProcessingTask<IrisRecord> {
     }
 
     @Override
-    protected IrisRecord process(boolean[] code) {
+    protected IrisRecord process(boolean[][] codes) {
         return new IrisRecord(
                 title,
                 image,
                 unwrappedImage,
-                code,
-                IrisCodeGenerator.getCodeVisualization(code)
+                codes,
+                IrisCodeGenerator.getCodeVisualization(codes[4])
         );
     }
 }

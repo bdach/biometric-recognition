@@ -11,15 +11,15 @@ public class IrisRecord extends Record {
     @Getter
     private final Image unwrappedImage;
     @Getter
-    private final boolean[] code;
+    private final boolean[][] codes;
     @Getter
     private final Image codeImage;
 
-    public IrisRecord(String name, Image sourceImage, Image unwrappedImage, boolean[] code, Image codeImage) {
+    public IrisRecord(String name, Image sourceImage, Image unwrappedImage, boolean[][] codes, Image codeImage) {
         super(name);
         this.sourceImage = sourceImage;
         this.unwrappedImage = unwrappedImage;
-        this.code = code;
+        this.codes = codes;
         this.codeImage = codeImage;
     }
 
