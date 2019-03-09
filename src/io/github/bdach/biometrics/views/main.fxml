@@ -12,6 +12,8 @@
             <Button fx:id="addButton"
                     onAction="#add"
                     text="Add record..." />
+            <Button text="Bulk import records..."
+                    onAction="#bulkImport" />
             <Button onAction="#delete"
                     text="Delete record..." />
             <Button fx:id="recognizeButton"

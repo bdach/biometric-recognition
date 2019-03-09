@@ -5,10 +5,7 @@ import io.github.bdach.biometrics.model.RecognitionType;
 import io.github.bdach.biometrics.model.Record;
 import io.github.bdach.biometrics.presentation.RecordListCell;
 import io.github.bdach.biometrics.presentation.controllers.RecordDetailController;
-import io.github.bdach.biometrics.presentation.dialogs.IrisRecognitionResultDialog;
-import io.github.bdach.biometrics.presentation.dialogs.IrisRecordWizardDialog;
-import io.github.bdach.biometrics.presentation.dialogs.RecordWizardDialog;
-import io.github.bdach.biometrics.presentation.dialogs.SettingsDialog;
+import io.github.bdach.biometrics.presentation.dialogs.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -55,6 +52,16 @@ public class MainController implements Controller {
                         .map(IrisRecord.class::cast)
                         .collect(Collectors.toList());
                 dialog.recognize(primaryStage, irisRecords);
+                break;
+        }
+    }
+
+    @FXML
+    public void bulkImport() {
+        switch (typeChoiceBox.getValue()) {
+            case IRIS:
+                IrisRecord[] newRecords = BulkIrisRecordWizard.bulkImport(primaryStage);
+                irisRecords.addAll(newRecords);
                 break;
         }
     }
