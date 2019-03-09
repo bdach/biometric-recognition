@@ -3,6 +3,7 @@ package io.github.bdach.biometrics.model;
 import javafx.scene.image.Image;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @EqualsAndHashCode(callSuper = true)
 public class IrisRecord extends Record {
@@ -11,9 +12,11 @@ public class IrisRecord extends Record {
     @Getter
     private final Image unwrappedImage;
     @Getter
-    private final boolean[][] codes;
+    @Setter
+    private boolean[][] codes;
     @Getter
-    private final Image codeImage;
+    @Setter
+    private Image codeImage;
 
     public IrisRecord(String name, Image sourceImage, Image unwrappedImage, boolean[][] codes, Image codeImage) {
         super(name);

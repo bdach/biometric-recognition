@@ -36,7 +36,7 @@ public class IrisCodeGenerator {
         return codes;
     }
 
-    public boolean[] getCode(double offset) {
+    private boolean[] getCode(double offset) {
         double[][] rings = getRings(offset);
         boolean[] code = new boolean[2 * SAMPLES_PER_RING * RINGS.size()];
 

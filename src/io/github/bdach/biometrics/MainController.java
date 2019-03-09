@@ -1,5 +1,6 @@
 package io.github.bdach.biometrics;
 
+import io.github.bdach.biometrics.algorithms.image.iris.IrisCodeRecalculationTask;
 import io.github.bdach.biometrics.model.IrisRecord;
 import io.github.bdach.biometrics.model.RecognitionType;
 import io.github.bdach.biometrics.model.Record;
@@ -11,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
@@ -21,7 +23,7 @@ import lombok.Setter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MainController implements Controller {
+public class MainController implements Controller, SettingChangeListener {
     @Setter
     private Stage primaryStage;
 
@@ -74,7 +76,7 @@ public class MainController implements Controller {
 
     @FXML
     public void settings() {
-        SettingsDialog dialog = new SettingsDialog();
+        SettingsDialog dialog = new SettingsDialog(this);
         dialog.showDialog(primaryStage);
     }
 
@@ -94,5 +96,17 @@ public class MainController implements Controller {
     public void initialize()
     {
         setUpRecordList();
+    }
+
+    @Override
+    public void onGaborWaveletFrequencyChanged() {
+        List<IrisRecord> records = irisRecords.stream()
+                .map(IrisRecord.class::cast)
+                .collect(Collectors.toList());
+        IrisCodeRecalculationTask task = new IrisCodeRecalculationTask(records);
+        TaskProgressDialog<Void> dialog = new TaskProgressDialog<>(task);
+        dialog.setTitle("Recalculating iris codes...");
+        dialog.showDialog(primaryStage);
+        recordListView.getSelectionModel().clearSelection();
     }
 }

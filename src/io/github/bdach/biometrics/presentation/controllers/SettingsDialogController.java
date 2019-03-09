@@ -1,6 +1,7 @@
 package io.github.bdach.biometrics.presentation.controllers;
 
 import io.github.bdach.biometrics.Controller;
+import io.github.bdach.biometrics.SettingChangeListener;
 import io.github.bdach.biometrics.model.Settings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -11,6 +12,8 @@ import lombok.Setter;
 public class SettingsDialogController implements Controller {
     @Setter
     private Stage primaryStage;
+    @Setter
+    private SettingChangeListener listener;
 
     private Settings settings;
 
@@ -41,7 +44,7 @@ public class SettingsDialogController implements Controller {
             return;
         }
 
-        Settings.setInstance(this.settings);
+        Settings.setInstance(this.settings, this.listener);
         primaryStage.close();
     }
 

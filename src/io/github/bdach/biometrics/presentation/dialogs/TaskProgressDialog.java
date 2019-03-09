@@ -5,22 +5,22 @@ import javafx.concurrent.Task;
 import javafx.concurrent.Worker;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import java.util.Optional;
 
 @RequiredArgsConstructor
 public class TaskProgressDialog<T> extends Dialog<TaskProgressController<T>> {
     private final Task<T> task;
+    @Getter
+    @Setter
+    private String title = "Operation in progress...";
 
     @Override
     protected String getResourceName() {
         return "../../views/task_progress.fxml";
-    }
-
-    @Override
-    protected String getTitle() {
-        return "Operation in progress...";
     }
 
     @Override
