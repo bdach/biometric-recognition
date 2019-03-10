@@ -35,7 +35,14 @@ W~dokumencie opisano zastosowane metody segmentacji, przetwarzania i~porównywan
 
 \section{Wstęp}
 
-% TODO
+Analiza tęczówki jest jedną z~najpopularniejszych metod identyfikacji tożsamości człowieka znanych biometrii.
+Główną przyczyną popularności tej cechy jest jej przystosowanie do~potrzeb identyfikacji --- tęczówka jest częścią oka, które jest chroniony przed~zniszczeniem przez~rogówkę i~powieki.
+Dodatkowo tęczówka ma~teksturę z~dużą liczbą szczegółów, która powoduje, że z~dużym prawdopodobieństwem można stwierdzić jej~unikalność.
+Z~tego powodu, pomimo tego, że~pozyskanie dobrego obrazu wymaga kooperacji osoby rozpoznawanej poprzez~zbliżenie oka do~aparatu, tęczówka jest jedną z~najlepszych znanych metod rozpoznawania.
+
+W~ramach projektu zaimplementowano metodę identyfikacji na~podstawie tęczówki opracowaną przez~Daugmana~\cite{daugman2004, slot2008}.
+W~wyniku tej metody obrazy tęczówek są~konwertowane na~binarny 2048-bitowy kod tęczówki.
+Szczegółowy opis metody znajduje~się w~sekcji~\ref{sec:method}.
 
 \section{Opis aplikacji}
 
@@ -69,6 +76,7 @@ Główną motywacją wyboru tej biblioteki były:
 % TODO
 
 \section{Opis metody}
+\label{sec:method}
 
 % TODO: ogólne informacje
 
@@ -234,24 +242,30 @@ gdzie $\{ x \}$ oznacza część ułamkową liczby~$x$: $\{ x \} = x - \left\lce
 
 \begin{thebibliography}{9}
 
+    \bibitem{daugman2004}
+        Daugman J.,
+        ,,How Iris Recognition Works'',
+        \emph{IEEE Transactions on Circuits and Systems for Video Technology},
+        tom~14,
+        nr~1,
+        2004.
+        
+    \bibitem{mmu}
+        MMU Iris Dataset
+        [Online].
+        Dostępne: \url{http://www.cs.princeton.edu/~andyz/downloads/MMUIrisDatabase.zip}
+
     \bibitem{javafx}
         Oracle Corporation,
         ,,OpenJFX'',
         dokumentacja on-line.
         Dostępne: \url{https://wiki.openjdk.java.net/display/OpenJFX/Main}.
 
-    \bibitem{atoz}
-        R. Fisher,
-        S. Perkins,
-        A. Walker,
-        E. Wolfart,
-        ,,A~to~Z of~Image Processing Concepts''.
-        Dostępne: \url{https://homepages.inf.ed.ac.uk/rbf/HIPR2/glossary.htm}.
-
-    \bibitem{mmu}
-        MMU Iris Dataset
-        [Online].
-        Dostępne: \url{http://www.cs.princeton.edu/~andyz/downloads/MMUIrisDatabase.zip}
+    \bibitem{slot2008}
+        Ślot K.,
+        \emph{Wybrane zagadnienia biometrii},
+        Wydawnictwa Komunikacji i~Łączności,
+        Warszawa 2008.
 
 \end{thebibliography}
 
