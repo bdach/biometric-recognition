@@ -92,13 +92,20 @@ Na~pasku narzędziowym udostępnione~są następujące akcje:
 \section{Opis metody}
 \label{sec:method}
 
-% TODO: ogólne informacje
+W~procesie rozpoznawania można wyróżnić trzy główne etapy:
+\begin{enumerate}
+    \item segmentacja obrazu w~celu znalezienia granic tęczówki na~zebranym obrazie,
+    \item właściwe przetwarzanie rozwiniętego obrazu tęczówki w~celu wyznaczenia kodu tęczówki,
+    \item porównywanie obliczonych kodów tęczówek w~celu wyznaczenia stopnia podobieństwa dwóch obrazów, umożliwiającego identyfikację osoby na~obrazie.
+\end{enumerate}
+W~ogólności algorytm rozpoznawania wykorzystuje: filtry liniowe i~nieliniowe, interpolację biliniową, dyskretną transformatę falkową oraz~odległość Hamminga.
 
 \subsection{Segmentacja obrazu}
 
-% TODO: wstęp że kradzione
+Celem pierwszej fazy jest wyznaczenie obszaru obrazu, na~którym znajduje się tęczówka.
+Metoda została przeniesiona bezpośrednio z~projektu opracowanego na~potrzeby przedmiotu ,,Analiza i~przetwarzanie obrazów biometrycznych''.
 
-Zaimplementowana metoda należy do~grona metod proceduralnych, tj.~stosuje ściśle określoną listę operacji i~nie stosuje metod optymalizacyjnych lub~stochastycznych.
+Zaimplementowana metoda segmentacji należy do~grona metod proceduralnych, tj.~stosuje ściśle określoną listę operacji i~nie stosuje metod optymalizacyjnych lub~stochastycznych.
 Kolejne kroki przetwarzania wejściowego obrazu w~celu lokalizacji tęczówki ilustruje rysunek~\ref{fig:block-diagram}.
 Opis~poszczególnych operacji znajduje~się w~poszczególnych częściach tego~rozdziału.
 
@@ -144,8 +151,8 @@ odwzorowujące luminancję pikseli w~modelu kolorów YCbCr.
 \paragraph{Progowanie.}
 Po~konwersji do~skali szarości następuje przejście do~obrazu binarnego poprzez wykonanie operacji progowania zgodnie ze~wzorem
 $$ I_o = \begin{cases}
-    0 & I_i < t \\
-    1 & I_i \geq t
+    0, & I_i < t \\
+    1, & I_i \geq t
 \end{cases} $$
 gdzie próg $t$ wyznaczany jest na~podstawie poziomów szarości całego obrazu ze~wzoru
 $$ t = \frac{1}{d} \sum_{i = 0}^{W - 1} \sum_{j = 0}^{H - 1} I_{ij} $$
