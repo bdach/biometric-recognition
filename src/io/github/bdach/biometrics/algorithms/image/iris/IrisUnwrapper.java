@@ -1,6 +1,8 @@
 package io.github.bdach.biometrics.algorithms.image.iris;
 
+import io.github.bdach.biometrics.algorithms.image.GaussianConvolutionFilter;
 import io.github.bdach.biometrics.algorithms.image.GrayscaleFilter;
+import io.github.bdach.biometrics.algorithms.image.HistogramNormalizingFilter;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
@@ -14,23 +16,34 @@ class IrisUnwrapper {
     private Image inputImage;
     private IrisLocation recognitionResult;
     private GrayscaleFilter grayscaleFilter;
+    private GaussianConvolutionFilter gaussianFilter;
 
     public IrisUnwrapper(Image inputImage, IrisLocation recognitionResult) {
         this.inputImage = inputImage;
         this.recognitionResult = recognitionResult;
         this.grayscaleFilter = new GrayscaleFilter(1.0 / 3, 1.0 / 3, 1.0 / 3);
+        this.gaussianFilter = new GaussianConvolutionFilter(1.0);
     }
 
     public Image unwrap() {
-        WritableImage outputImage = new WritableImage(WIDTH, HEIGHT);
         PixelReader pixelReader = inputImage.getPixelReader();
-        PixelWriter pixelWriter = outputImage.getPixelWriter();
-        long totalPixelCount = HEIGHT * WIDTH;
-        long pixelCount = 0;
+        int originalWidth = (int) inputImage.getWidth();
+        int originalHeight = (int) inputImage.getHeight();
 
+        WritableImage blurredImage = new WritableImage(originalWidth, originalHeight);
+        PixelWriter pixelWriter = blurredImage.getPixelWriter();
+        for (int y = 0; y < originalHeight; ++y) {
+            for (int x = 0; x < originalWidth; ++x) {
+                Color outColor = gaussianFilter.getPixelColor(pixelReader, x, y, originalWidth, originalHeight);
+                pixelWriter.setColor(x, y, outColor);
+            }
+        }
+
+        WritableImage outputImage = new WritableImage(WIDTH, HEIGHT);
+        pixelWriter = outputImage.getPixelWriter();
+        pixelReader = blurredImage.getPixelReader();
         for (int y = 0; y < HEIGHT; ++y) {
             for (int x = 0; x < WIDTH; ++x) {
-                pixelCount += 1;
                 double r = 1 - (double) y / HEIGHT;
                 double phi = ((double) x / WIDTH) * 2 * Math.PI;
                 Color color = sampleOutputPixel(pixelReader, r, phi - Math.PI / 2);

@@ -30,5 +30,5 @@ public class Settings {
 
     @Getter
     @Setter
-    private double gaborWaveletFrequency = 8 * Math.PI;
+    private double gaborWaveletFrequency = Math.PI;
 }

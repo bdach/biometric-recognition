@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class IrisCodeGenerator {
@@ -19,7 +21,10 @@ public class IrisCodeGenerator {
 
     private static final List<List<Double>> RINGS = Arrays.asList(INNER, INNER, INNER, INNER, MID, MID, OUTER, OUTER);
 
-    private static final List<Double> OFFSETS = Arrays.asList(330.0, 340.0, 350.0,   0.0,  10.0,  20.0,  30.0);
+    private static final List<Double> OFFSETS = IntStream.range(340, 381)
+        .mapToDouble(val -> val % 360)
+        .boxed()
+        .collect(Collectors.toList());
 
     private static final int SAMPLES_PER_RING = 128;
 
@@ -98,14 +103,23 @@ public class IrisCodeGenerator {
     }
 
     private void sampleRingPart(List<Double> samples, PixelReader pixelReader, int startY, int endY, int startX, int endX, int width) {
+        double center = (endY - startY) / 2.0;
+        double sd = 0.4;
         for (int x = startX; x < endX; ++x) {
             double sample = 0.0;
+            double denominator = 0.0;
             int xx = x % width;
             for (int y = startY; y < endY; ++y) {
-                sample += pixelReader.getColor(xx, y).getRed();
+                double coefficient = gaussian(y - startY, center, sd);
+                sample += pixelReader.getColor(xx, y).getRed() * coefficient;
+                denominator += coefficient;
             }
-            sample /= endY - startY;
+            sample /= denominator;
             samples.add(sample);
         }
+    }
+
+    private static double gaussian(double x, double mu, double sigma) {
+        return Math.exp(-Math.pow(x - mu, 2) / (2 * Math.pow(sigma, 2)));
     }
 }

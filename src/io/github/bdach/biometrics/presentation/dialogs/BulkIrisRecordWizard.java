@@ -15,6 +15,8 @@ public class BulkIrisRecordWizard {
     public static IrisRecord[] bulkImport(Stage parentStage) {
         FileChooser fileChooser = new FileChooser();
         List<File> files = fileChooser.showOpenMultipleDialog(parentStage);
+        if (files == null || files.size() == 0)
+            return null;
         BulkIrisRecordTask task = new BulkIrisRecordTask(files);
         TaskProgressDialog<IrisRecord[]> dialog = new TaskProgressDialog<>(task);
         dialog.showDialog(parentStage);

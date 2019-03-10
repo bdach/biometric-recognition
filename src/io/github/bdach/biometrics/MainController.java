@@ -63,7 +63,8 @@ public class MainController implements Controller, SettingChangeListener {
         switch (typeChoiceBox.getValue()) {
             case IRIS:
                 IrisRecord[] newRecords = BulkIrisRecordWizard.bulkImport(primaryStage);
-                irisRecords.addAll(newRecords);
+                if (newRecords != null)
+                    irisRecords.addAll(newRecords);
                 break;
         }
     }

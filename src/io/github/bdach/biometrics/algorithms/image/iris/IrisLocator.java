@@ -49,8 +49,8 @@ class IrisLocator {
         return new IrisLocation(
                 centerX,
                 centerY,
-                innerRadius,
-                outerRadius
+                (int) (1.1 * innerRadius),
+                (int) (0.95 * outerRadius)
         );
     }
 
