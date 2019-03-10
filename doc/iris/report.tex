@@ -246,15 +246,52 @@ gdzie $\{ x \}$ oznacza część ułamkową liczby~$x$: $\{ x \} = x - \left\lce
 
 \subsection{Rozpoznawanie na~podstawie wysegmentowanej tęczówki}
 \label{subsec:recognition}
-% TODO
+Dalsza część algorytmu rozpoznawania działa na~rozwiniętym zdjęciu tęczówki.
+Z~racji na~możliwość obrotu tęczówki, przy porównywaniu uwzględniane~są zdjęcia tęczówki z~obrotem ze~zbioru $\{-30^\circ, -20^\circ, -10^\circ, 0^\circ, 10^\circ, 20^\circ, 30^\circ\}$.
 
 \paragraph{Podział rozwiniętej tęczówki na~pasma.}
+Zgodnie z~algorytmem zaproponowanym przez~Daugmana~\cite{slot2008}, po~rozwinięciu obraz tęczówki dzielony jest na~8 pasów o~równej szerokości w~kierunku radialnym.
+
+Aby~uniknąć włączania rzęs lub~powiek do~analizy, pasma nie~są brane pod~uwagę w~całości.
+Przyjmując, że kąty w~stopniach liczone~są od~dodatniej półosi~OY (tj. kąt~$0^\circ$ kieruje~się w~górę), brane~są pod~uwagę następujące przedziały:
+\begin{itemize}
+    \item dla pasm $\{ 1, 2, 3, 4 \}$ --- kąty $[0^\circ, 165^\circ] \cup [195^\circ, 360^\circ]$,
+    \item dla pasm $\{ 5, 6 \}$ --- kąty $[33.5^\circ, 146.5^\circ] \cup [213.5^\circ, 326.5^\circ]$,
+    \item dla pasm $\{ 7, 8 \}$ --- kąty $[45^\circ, 135^\circ] \cup [225^\circ, 315^\circ]$.
+\end{itemize}
 
 \paragraph{Zastosowanie transformaty falkowej Gabora.}
+Wyznaczone pasma tęczówki są~następnie uśredniane w~kierunku radialnym, w~celu sprowadzenia ich do~postaci jednowymiarowej funkcji intensywności $I(x)$.
+Ta~funkcja jest później dyskretyzowana za~pomocą transformaty falkowej Gabora, której współczynniki wyznaczane~są ze~wzoru
+$$ c_k = \sum_{i=1}^n I(x_i) \exp \left( -\frac{(x_i - x_k)^2}{\sigma^2} \right) \exp (-i 2 \pi f x_i) $$
+gdzie:
+\begin{itemize}
+    \item $k = \{1, 2, \dots, n\}$ --- indeks próbki; w~opracowanym programie przyjęto $n = 128$,
+    \item $f$ to częstotliwość falki~Gabora, która jest parametryzowana w~programie przez opcję ustawień (\keys{Settings...}),
+    \item $\sigma$ to tzw. rozmycie falki; zgodnie z~\cite{slot2008} przyjmuje~się $\sigma = \frac{1}{2} \pi f$.
+\end{itemize}
 
 \paragraph{Wyznaczenie kodu tęczówki.}
+Wynikowe współczynniki transformaty są~liczbami zespolonymi ($c_k \in \mathbb{C}$).
+Każdy ze~współczynników konwertowany jest na~dwa bity binarne:
+\begin{itemize}
+    \item Pierwszy bit jest równy 1, gdy część urojona współczynnika jest ujemna ($\Im c_k < 0$) i~0 w~przeciwnym przypadku,
+    \item Drugi bit jest równy 1, gdy część rzeczywista współczynnika jest ujemna ($\Re c_k < 0$) i~0 w~przeciwnym przypadku.
+\end{itemize}
+W~ten sposób uzyskiwane jest $128 \times 2 \times 8 = 2048$ bitów informacji, które nazywane~są kodem tęczówki.
 
 \paragraph{Porównywanie kodów tęczówek.}
+Nowe obrazy osób do~zidentyfikowania poddawane~są temu samemu procesowi przetwarzania.
+W~ten sposób uzyskiwany jest zestaw kodów $c_1, \dots, c_k$ (z~różnymi kątami obrotu), który należy porównać z~zestawami kodów $c'_1, \dots, c'_k$ zawartymi w~bazie.
+
+Porównywanie odbywa~się poprzez obliczenie wartości
+$$ d = \min_{i=1,\dots,k} \min_{j=1,\dots,k} 2048 - d_H(c_i, c'_j) $$
+gdzie~$d_H(x, y)$ to~odległość Hamminga między dwoma~ciągami binarnymi długości $m$:
+$$ d_H(x, y) = \left| \{ i=1,\dots,m : x_i \neq y_i \} \right| $$
+tj.~liczba pozycji, na~których ciągi $x, y$ różnią~się.
+
+Im~mniejsza wartość $d$, tym~bliższe jest dopasowanie obrazu identyfikowanego do~obrazu z~bazy.
+Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizujący $d$, gdzie ta~minimalna odległość jest~miarą jakości identyfikacji, tj. jeśli jest ona zbyt~duża, rozpoznawany obraz jest~odrzucany jako~niepasujący do~żadnego rekordu w~bazie.
 
 \section{Wyniki działania metody}
 % TODO
