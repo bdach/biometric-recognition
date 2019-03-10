@@ -47,13 +47,13 @@ Szczegółowy opis metody znajduje~się w~sekcji~\ref{sec:method}.
 \section{Opis aplikacji}
 
 W~ramach projektu stworzony został program okienkowy umożliwiający gromadzenie i~porównywanie obrazów ludzkich oczu.
-Program został napisany w~języku Java w~wersji 8.
+Program został napisany w~języku Java w~wersji~8.
 
 Do~stworzenia interfejsu użytkownika została wybrana biblioteka JavaFX \cite{javafx}.
 Główną motywacją wyboru tej biblioteki były:
 \begin{itemize}
     \item zgodność z~wieloma platformami (Windows, Linux, Mac),
-    \item wbudowane w~bibliotekę klasy pozwalające na~edycję bitmap poprzez zmianę kolorów pojedynczych pikseli, co~umożliwia samodzielną realizację filtrów, na~których oparta jest operacja segmentacji.
+    \item wbudowane w~bibliotekę klasy pozwalające na~edycję bitmap poprzez zmianę kolorów pojedynczych pikseli, co~umożliwia samodzielną realizację filtrów, na~których oparta jest operacja segmentacji oraz~implementację algorytmu rozpoznawania.
 \end{itemize}
 
 \begin{figure}
@@ -73,7 +73,21 @@ Główną motywacją wyboru tej biblioteki były:
 
 \subsection{Instrukcja obsługi}
 
-% TODO
+Po~uruchomieniu aplikacji widocznej jest główne okno, przedstawione na~rysunku~\ref{fig:main-window}.
+Aplikacja pozwala zarządzać bazą zgromadzonych obrazów tęczówek i~rozpoznawać nowe~obrazy z~tęczówkami w~bazie.
+Na~pasku narzędziowym udostępnione~są następujące akcje:
+
+\begin{itemize}
+    \item Przycisk \keys{Add record...} pozwala na~dodanie nowego rekordu ze~zdjęciem tęczówki do~bazy.
+    \item Przycisk \keys{Bulk import records...} pozwala na~dodanie wielu nowych rekordów za~jednym razem poprzez wybranie grupy zdjęć tęczówek do~zaimportowania.
+    \item Przycisk \keys{Delete record...} pozwala na~usunięcie zaznaczonego rekordu z~bazy.
+    \item Przycisk \keys{Recognize...} pozwala na~porównanie wybranego zdjęcia ze~zdjęciami zgromadzonymi w~bazie i~wyświetla wyniki porównania.
+    Wyniki są~posortowane względem stopnia podobieństwa do~referencyjnego obrazu.
+    Przykład widoku z~wynikami widoczny jest na~rysunku~\ref{fig:recognition-results}.
+    \item Przycisk \keys{Settings...} pozwala na~zmianę ustawień rozpoznawania.
+    W~przypadku tęczówki jedynym parametrem konfiguracyjnym jest częstotliwość falek~Gabora używanych podczas~transformaty falkowej opisanej w~podsekcji~\ref{subsec:recognition}.
+    Zmiana częstotliwości powoduje ponowne obliczenie kodów dla~wszystkich tęczówek w~bazie.
+\end{itemize}
 
 \section{Opis metody}
 \label{sec:method}
@@ -224,6 +238,7 @@ Ponieważ wynikowe współrzędne $(x,y)$ są~ułamkowe, finalnie stosowana jest
 gdzie $\{ x \}$ oznacza część ułamkową liczby~$x$: $\{ x \} = x - \left\lceil x \right\rceil$.
 
 \subsection{Rozpoznawanie na~podstawie wysegmentowanej tęczówki}
+\label{subsec:recognition}
 % TODO
 
 \paragraph{Podział rozwiniętej tęczówki na~pasma.}
