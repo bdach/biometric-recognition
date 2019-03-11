@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<?import org.controlsfx.control.spreadsheet.SpreadsheetView?>
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="io.github.bdach.biometrics.presentation.controllers.BulkIrisRecognitionViewController"
+            prefHeight="400.0" prefWidth="600.0">
+    <top>
+        <Label text="Rows represent the images selected for recognition, columns represent images already in the database.">
+            <padding>
+                <Insets topRightBottomLeft="10" />
+            </padding>
+        </Label>
+    </top>
+    <center>
+        <SpreadsheetView fx:id="recognitionResultSpreadsheetView"
+                         stylesheets="@styles.css"
+                         rowHeaderWidth="100"
+                         editable="false">
+            <padding>
+                <Insets topRightBottomLeft="10" />
+            </padding>
+        </SpreadsheetView>
+    </center>
+    <bottom>
+        <ButtonBar>
+            <padding>
+                <Insets topRightBottomLeft="10" />
+            </padding>
+            <buttons>
+                <Button onAction="#exportToCsv"
+                        text="Export to .csv..."
+                        ButtonBar.buttonData="LEFT" />
+                <Button onAction="#ok"
+                        text="OK"
+                        defaultButton="true"
+                        ButtonBar.buttonData="OK_DONE" />
+            </buttons>
+        </ButtonBar>
+    </bottom>
+</BorderPane>

@@ -10,5 +10,10 @@ import java.util.List;
 @Getter
 public class IrisRecognitionResults {
     private final Image comparedCodeImage;
+    private final String comparedImageFilename;
     private final List<IrisRecognitionResult> results;
+
+    public void sort() {
+        results.sort(IrisRecognitionResult::compareTo);
+    }
 }

@@ -10,20 +10,21 @@ import java.util.stream.Collectors;
 
 public class IrisRecognitionTask extends IrisProcessingTask<IrisRecognitionResults> {
     private final List<IrisRecord> records;
+    private final String imageFilename;
 
-    public IrisRecognitionTask(Image image, List<IrisRecord> records) {
+    public IrisRecognitionTask(Image image, String imageFilename, List<IrisRecord> records) {
         super(image);
         this.records = records;
+        this.imageFilename = imageFilename;
     }
 
     @Override
     protected IrisRecognitionResults process(boolean[][] codes) {
         List<IrisRecognitionResult> resultList = records.stream()
                 .map(record -> compare(record, codes))
-                .sorted()
                 .collect(Collectors.toList());
         Image codeVisualization = IrisCodeGenerator.getCodeVisualization(codes[4]);
-        return new IrisRecognitionResults(codeVisualization, resultList);
+        return new IrisRecognitionResults(codeVisualization, imageFilename, resultList);
     }
 
     private IrisRecognitionResult compare(IrisRecord record, boolean[][] codes) {

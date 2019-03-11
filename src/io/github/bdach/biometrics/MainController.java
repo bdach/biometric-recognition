@@ -50,9 +50,7 @@ public class MainController implements Controller, SettingChangeListener {
         switch (typeChoiceBox.getValue()) {
             case IRIS:
                 IrisRecognitionResultDialog dialog = new IrisRecognitionResultDialog();
-                List<IrisRecord> irisRecords = this.irisRecords.stream()
-                        .map(IrisRecord.class::cast)
-                        .collect(Collectors.toList());
+                List<IrisRecord> irisRecords = getIrisRecords();
                 dialog.recognize(primaryStage, irisRecords);
                 break;
         }
@@ -73,6 +71,17 @@ public class MainController implements Controller, SettingChangeListener {
     public void delete() {
         ObservableList<Record> selectedItems = recordListView.getSelectionModel().getSelectedItems();
         recordListView.getItems().removeAll(selectedItems);
+    }
+
+    @FXML
+    public void bulkRecognize() {
+        switch (typeChoiceBox.getValue()) {
+            case IRIS:
+                BulkIrisRecognitionResultDialog dialog = new BulkIrisRecognitionResultDialog();
+                List<IrisRecord> irisRecords = getIrisRecords();
+                dialog.recognizeBulk(primaryStage, irisRecords);
+                break;
+        }
     }
 
     @FXML
@@ -101,13 +110,17 @@ public class MainController implements Controller, SettingChangeListener {
 
     @Override
     public void onGaborWaveletFrequencyChanged() {
-        List<IrisRecord> records = irisRecords.stream()
-                .map(IrisRecord.class::cast)
-                .collect(Collectors.toList());
+        List<IrisRecord> records = getIrisRecords();
         IrisCodeRecalculationTask task = new IrisCodeRecalculationTask(records);
         TaskProgressDialog<Void> dialog = new TaskProgressDialog<>(task);
         dialog.setTitle("Recalculating iris codes...");
         dialog.showDialog(primaryStage);
         recordListView.getSelectionModel().clearSelection();
+    }
+
+    private List<IrisRecord> getIrisRecords() {
+        return this.irisRecords.stream()
+                .map(IrisRecord.class::cast)
+                .collect(Collectors.toList());
     }
 }

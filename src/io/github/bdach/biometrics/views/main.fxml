@@ -16,9 +16,10 @@
                     onAction="#bulkImport" />
             <Button onAction="#delete"
                     text="Delete record..." />
-            <Button fx:id="recognizeButton"
-                    onAction="#recognize"
+            <Button onAction="#recognize"
                     text="Recognize..." />
+            <Button onAction="#bulkRecognize"
+                    text="Recognize multiple images..." />
             <Pane HBox.hgrow="ALWAYS" />
             <ComboBox fx:id="typeChoiceBox">
                 <value>

@@ -20,7 +20,7 @@ public abstract class RecognitionResultDialog<TRecord extends Record, TResult ex
 
     public void recognize(Stage parentStage, List<TRecord> records) {
         if (records.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No iris records in database.", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "No records in database.", ButtonType.OK);
             alert.showAndWait();
             return;
         }

@@ -15,10 +15,11 @@ import java.util.Optional;
 public class IrisRecognitionResultDialog
         extends RecognitionResultDialog<IrisRecord, IrisRecognitionResult, IrisRecognitionResultController> {
     private Image recognizedImage;
+    private String recognizedImageFilename;
     private Image codeImage;
 
     public IrisRecognitionResults process(List<IrisRecord> irisRecords) {
-        IrisRecognitionTask task = new IrisRecognitionTask(recognizedImage, irisRecords);
+        IrisRecognitionTask task = new IrisRecognitionTask(recognizedImage, recognizedImageFilename, irisRecords);
         TaskProgressDialog<IrisRecognitionResults> dialog = new TaskProgressDialog<>(task);
         dialog.showDialog(stage);
         Optional<IrisRecognitionResults> result = dialog.getResult();
@@ -32,7 +33,9 @@ public class IrisRecognitionResultDialog
         if (imageFile == null)
             return null;
         recognizedImage = new Image(imageFile.toURI().toString());
+        recognizedImageFilename = imageFile.getName();
         IrisRecognitionResults results = process(irisRecords);
+        results.sort();
         codeImage = results.getComparedCodeImage();
         return results.getResults();
     }

@@ -43,7 +43,7 @@
                 <Insets topRightBottomLeft="10" />
             </padding>
             <buttons>
-                <Button defaultButton="true" onAction="#ok" text="Create" ButtonBar.buttonData="OK_DONE" />
+                <Button defaultButton="true" onAction="#ok" text="OK" ButtonBar.buttonData="OK_DONE" />
                 <Button cancelButton="true" onAction="#cancel" text="Cancel" ButtonBar.buttonData="CANCEL_CLOSE" />
             </buttons>
         </ButtonBar>

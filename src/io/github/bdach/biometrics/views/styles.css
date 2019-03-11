@@ -1,0 +1,4 @@
+.spreadsheet-cell.best-score {
+    -fx-background-color: #ccc;
+    -fx-font-weight: bold;
+}
