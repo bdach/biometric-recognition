@@ -224,7 +224,7 @@ Przykładowy wynik segmentacji wykonanej powyższą metodą znajduje~się na~rys
 \end{figure}
 
 \paragraph{Rozwinięcie tęczówki w~prostokąt.}
-Program umożliwia również rozwinięcie tęczówki w~prostokątny obraz o~wymiarach $720 \times 400$.
+Segmentację kończy rozwinięcie tęczówki w~prostokątny obraz o~wymiarach $720 \times 400$.
 Rozwinięcie to~odbywa~się poprzez przejście ze~współrzędnych polarnych na~kartezjańskie.
 Dla~każdego piksela $(\theta,r)$ obrazu wynikowego wyznaczane~są współrzędne tego~punktu na~obrazie wyjściowym ze~wzorów
 \begin{align*}
@@ -244,10 +244,12 @@ Ponieważ wynikowe współrzędne $(x,y)$ są~ułamkowe, finalnie stosowana jest
 \end{align*}
 gdzie $\{ x \}$ oznacza część ułamkową liczby~$x$: $\{ x \} = x - \left\lceil x \right\rceil$.
 
+Aby zmniejszyć liczbę nieistotnych szczegółów w~rozwiniętym obrazie, przed~rozwijaniem stosowany jest filtr splotowy~Gaussa ze~współczynnikiem~1 (tj.~filtr uśredniający).
+
 \subsection{Rozpoznawanie na~podstawie wysegmentowanej tęczówki}
 \label{subsec:recognition}
 Dalsza część algorytmu rozpoznawania działa na~rozwiniętym zdjęciu tęczówki.
-Z~racji na~możliwość obrotu tęczówki, przy porównywaniu uwzględniane~są zdjęcia tęczówki z~obrotem ze~zbioru $\{-30^\circ, -20^\circ, -10^\circ, 0^\circ, 10^\circ, 20^\circ, 30^\circ\}$.
+Z~racji na~możliwość obrotu tęczówki, przy porównywaniu uwzględniane~są zdjęcia tęczówki z~obrotem co~stopień w~przedziale $[-20^\circ, 20^\circ]$.
 
 \paragraph{Podział rozwiniętej tęczówki na~pasma.}
 Zgodnie z~algorytmem zaproponowanym przez~Daugmana~\cite{slot2008}, po~rozwinięciu obraz tęczówki dzielony jest na~8 pasów o~równej szerokości w~kierunku radialnym.
@@ -262,6 +264,7 @@ Przyjmując, że kąty w~stopniach liczone~są od~dodatniej półosi~OY (tj. ką
 
 \paragraph{Zastosowanie transformaty falkowej Gabora.}
 Wyznaczone pasma tęczówki są~następnie uśredniane w~kierunku radialnym, w~celu sprowadzenia ich do~postaci jednowymiarowej funkcji intensywności $I(x)$.
+Uśrednianie to~jest ważone, z~użyciem funkcji~Gaussa.
 Ta~funkcja jest później dyskretyzowana za~pomocą transformaty falkowej Gabora, której współczynniki wyznaczane~są ze~wzoru
 $$ c_k = \sum_{i=1}^n I(x_i) \exp \left( -\frac{(x_i - x_k)^2}{\sigma^2} \right) \exp (-i 2 \pi f x_i) $$
 gdzie:
