@@ -286,7 +286,7 @@ Nowe obrazy osób do~zidentyfikowania poddawane~są temu samemu procesowi przetw
 W~ten sposób uzyskiwany jest zestaw kodów $c_1, \dots, c_k$ (z~różnymi kątami obrotu), który należy porównać z~zestawami kodów $c'_1, \dots, c'_k$ zawartymi w~bazie.
 
 Porównywanie odbywa~się poprzez obliczenie wartości
-$$ d = \min_{i=1,\dots,k} \min_{j=1,\dots,k} 2048 - d_H(c_i, c'_j) $$
+$$ d = \max_{i=1,\dots,k} \max_{j=1,\dots,k} 2048 - d_H(c_i, c'_j) $$
 gdzie~$d_H(x, y)$ to~odległość Hamminga między dwoma~ciągami binarnymi długości $m$:
 $$ d_H(x, y) = \left| \{ i=1,\dots,m : x_i \neq y_i \} \right| $$
 tj.~liczba pozycji, na~których ciągi $x, y$ różnią~się.
@@ -296,6 +296,36 @@ Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizując
 
 \section{Wyniki działania metody}
 % TODO
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.9\textwidth]{res/img/freq.pdf}
+    \caption{
+        Wykres słupkowy przedstawiający liczbę prawidłowych identyfikacji dla~obrazów testowych w~zależności od~wybranej częstotliwości falki~Gabora przy~transformacie falkowej.
+    }
+    \label{fig:wavelet-frequency}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{res/img/heatmap.pdf}
+    \caption{
+        Mapa ciepła odległości Hamminga dla~par obrazów treningowych (znajdujących~się w~bazie) i~obrazów testowych.
+        Niskie odległości Hamminga zaznaczone są~kolorem ciemnym, wysokie --- kolorem jasnym.
+        Widoczny jest trend występowania najciemniejszych elementów na~przekątnej, oznaczających prawidłową identyfikację tożsamości.
+    }
+    \label{fig:heatmap}
+\end{figure}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{res/img/false-true-positives.pdf}
+    \caption{
+        Wykres przedstawiający liczbę prawidłowych (\emph{true positive}) i~nieprawidłowych (\emph{false positive}) identyfikacji w~zależności od~przyjętego progu na~odległość Hamminga między~kodami tęczówek.
+    }
+    \label{fig:false-true-positives}
+\end{figure}
 
 \section{Podsumowanie}
 % TODO
