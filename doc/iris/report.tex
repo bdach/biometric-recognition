@@ -295,7 +295,15 @@ Im~mniejsza wartość $d$, tym~bliższe jest dopasowanie obrazu identyfikowanego
 Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizujący $d$, gdzie ta~minimalna odległość jest~miarą jakości identyfikacji, tj. jeśli jest ona zbyt~duża, rozpoznawany obraz jest~odrzucany jako~niepasujący do~żadnego rekordu w~bazie.
 
 \section{Wyniki działania metody}
-% TODO
+
+Poprawność działania metody była testowana na~zbiorze danych \emph{MMU~Iris Dataset}~\cite{mmu} dostarczonym przez Multimedia University.
+W~zbiorze znajduje~się 450~obrazów tęczówek (po~5~zdjęć lewego i~prawego oka 45~osób), pozyskanych za~pomocą aparatu LG~IrisAccess~2000 z~odległości 7-25~centymetrów.
+Jest to~jeden z~niewielu publicznie dostępnych zbiorów, jednak~zdjęcia w~nim zawarte mają dość~niską rozdzielczość~\cite{zeng}.
+
+Do~testów wyselekcjonowany został podzbiór 45~obrazów treningowych, które umieszczone zostały w~bazie i~45 obrazów testowych, po~1~obraz testowy i~treningowy na~osobę.
+Pierwszym celem eksperymentów było dobranie optymalnej wartości częstotliwości falek~Gabora wykorzystywanych w~transformacie, na~podstawie której wyznaczany jest kod.
+Rozważane były częstotliwości z~zakresu $[0.25 \pi, 3 \pi]$.
+Wyniki eksperymentów ilustruje wykres \ref{fig:wavelet-frequency}.
 
 \begin{figure}
     \centering
@@ -305,6 +313,14 @@ Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizując
     }
     \label{fig:wavelet-frequency}
 \end{figure}
+
+Najlepsze wyniki osiągnęły wartości częstotliwości $f = \pi$ i $f = 1.25 \pi$.
+Z~uwagi na~to, że dla~tej drugiej częstotliwości odległości~Hamminga kodów były bardzo niskie nawet dla~obrazów tęczówek innych osób, do~dalszych rozważań wybrana została częstotliwość $f = \pi$.
+
+Wykres~\ref{fig:heatmap} ilustruje odległości Hamminga między poszczególnymi parami obrazów ze~zbiorów: treningowego i~testowego.
+Widoczny jest trend występowania ciemniejszych pól na~przekątnej macierzy, co~ilustruje tendencję metody do~poprawnej identyfikacji osoby na~obrazie, aczkolwiek ze~zmianami w~faktycznej odległości Hamminga.
+Bywają jednak przypadki obrazów testowych, które wykazują dość~dużą odległość Hamminga do~wszystkich obrazów treningowych (np. \texttt{thomas1.bmp}).
+Może to~oznaczać zmianę w~warunkach akwizycji obrazów, która wpływa negatywnie na~zdolność rozpoznawania.
 
 \begin{figure}
     \centering
@@ -317,18 +333,38 @@ Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizując
     \label{fig:heatmap}
 \end{figure}
 
+Po~wyznaczeniu macierzy odległości zbadano następnie, czy~istnieje taka progowa wartość pewnego wskaźnika, która pozwoliłaby na~zminimalizowanie błędnych identyfikacji (ang.~\emph{false positive}), jednocześnie zwiększając liczbę poprawnych identyfikacji (ang.~\emph{true positive}).
+Rozważano następujące wskaźniki progowe:
+\begin{itemize}
+    \item bezwzględny próg na~najmniejszą wartość odległości~Hamminga,
+    \item stosunek najmniejszej odległości~Hamminga do~największej:
+    $$ t_A = \frac{\min_{i=1, \dots, k} d_H(x', x_i)}{\max_{j=1, \dots, k} d_H(x', x_j)}$$
+    \item stosunek najmniejszej odległości~Hamminga do~średniej:
+    $$ t_B = \frac{\min_{i=1, \dots, k} d_H(x', x_i) \cdot k}{\sum_{j=1, \dots, k} d_H(x', x_j)} $$
+    \item stosunek najmniejszej odległości~Hamminga do~drugiej najmniejszej:
+    $$ t_C = \frac{\min_{i=1, \dots, k} d_H(x', x_i)}{\min_{\substack{j=1, \dots, k \\ j \neq \arg \min_{l=1, \dots, k} d_H(x', x_l)}} d_H(x', x_j)}$$
+\end{itemize}
+Wyniki tej~analizy przedstawiają wykresy~\ref{fig:false-true-positives}.
 
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{res/img/false-true-positives.pdf}
     \caption{
         Wykres przedstawiający liczbę prawidłowych (\emph{true positive}) i~nieprawidłowych (\emph{false positive}) identyfikacji w~zależności od~przyjętego progu na~odległość Hamminga między~kodami tęczówek.
+        Rozważano progi bezwzględne oraz~względne (względem maksymalnej, średniej i~drugiej najmniejszej odległości).
     }
     \label{fig:false-true-positives}
 \end{figure}
 
+Wykres ilustruje brak możliwości wyboru takiego progu absolutnego, który~skutecznie zmniejszyłby liczbę błędów identyfikacji bez~poświęcenia użyteczności rozwiązania --- obniżenie progu do~wartości eliminującej fałszywe pozytywne wyniki powoduje odrzucenie zbyt~dużej liczby poprawnych klasyfikacji.
+Progi względne prezentują~się trochę lepiej --- w~przypadku progu względem średniej przyjęcie wartości progowej w~okolicach 0.7 pozwala na~zmaksymalizowanie prawidłowych klasyfikacji (ok.~połowa zbioru) przy~pozostawieniu braków fałszywych pozytywnych wyników.
+
 \section{Podsumowanie}
-% TODO
+
+Zaimplementowany system rozpoznawania człowieka na~podstawie tęczówki skutecznie dokonuje segmentacji i~rozwinięcia tęczówki na~pozyskanych obrazach.
+Skuteczność rozpoznawania na~testowanym zbiorze jest dość dobra, jednak występuje niezerowa liczba fałszywie zidentyfikowanych rekordów, co~szkodzi praktycznemu zastosowaniu rozwiązania.
+Zmniejszenie progu rozpoznawania pozwala na~zmniejszenie liczby takich przypadków, jednak znacząco zwiększa również liczbę fałszywych odrzuceń, pogarszając użyteczność rozwiązania.
+Przyczynami tego stanu rzeczy może być słaba jakość obrazów ze~zbioru testowego lub~błąd w~implementacji algorytmu.
 
 \begin{thebibliography}{9}
 
@@ -356,6 +392,12 @@ Z~tego względu jako~wynik identyfikacji brany jest~rekord z~bazy minimalizując
         \emph{Wybrane zagadnienia biometrii},
         Wydawnictwa Komunikacji i~Łączności,
         Warszawa 2008.
+
+    \bibitem{zeng}
+        Andy Zeng,
+        ,,Iris Recognition''
+        [Online].
+        Dostępne: \url{http://www.cs.princeton.edu/~andyz/irisrecognition}.
 
 \end{thebibliography}
 
