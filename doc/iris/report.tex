@@ -71,6 +71,15 @@ Główną motywacją wyboru tej biblioteki były:
     \label{fig:recognition-results}
 \end{figure}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{res/img/recognition-results-bulk.PNG}
+    \caption{Widok z~wynikami rozpoznawania wielu zdjęć.
+    Widoczna jest macierz odległości Hamminga między parami zdjęć ze~zbioru testowego (wiersze) i~treningowego (kolumny).
+    Najmniejsza odległość Hamminga w~każdym wierszu oznaczona jest kolorem szarym i~pogrubionym tekstem.}
+    \label{fig:recognition-results-bulk}
+\end{figure}
+
 \subsection{Instrukcja obsługi}
 
 Po~uruchomieniu aplikacji widocznej jest główne okno, przedstawione na~rysunku~\ref{fig:main-window}.
@@ -84,6 +93,13 @@ Na~pasku narzędziowym udostępnione~są następujące akcje:
     \item Przycisk \keys{Recognize...} pozwala na~porównanie wybranego zdjęcia ze~zdjęciami zgromadzonymi w~bazie i~wyświetla wyniki porównania.
     Wyniki są~posortowane względem stopnia podobieństwa do~referencyjnego obrazu.
     Przykład widoku z~wynikami widoczny jest na~rysunku~\ref{fig:recognition-results}.
+    \item Przycisk \keys{Recognize...} pozwala na~porównanie wybranego zdjęcia ze~zdjęciami zgromadzonymi w~bazie i~wyświetla wyniki porównania.
+    Wyniki są~posortowane względem stopnia podobieństwa do~referencyjnego obrazu.
+    Przykład widoku z~wynikami widoczny jest na~rysunku~\ref{fig:recognition-results}.
+    \item Przycisk \keys{Recognize multiple images...} pozwala na~porównanie wybranego zbioru zdjęć ze~zdjęciami w~bazie.
+    Wynik porównania przedstawiany jest w~postaci tabeli zawierającej odległości Hamminga między~poszczególnymi parami zdjęć.
+    Możliwy jest również eksport wyników porównania do~pliku \texttt+.csv+.
+    Przykład takiego porównania widoczny jest na~rysunku~\ref{fig:recognition-results-bulk}.
     \item Przycisk \keys{Settings...} pozwala na~zmianę ustawień rozpoznawania.
     W~przypadku tęczówki jedynym parametrem konfiguracyjnym jest częstotliwość falek~Gabora używanych podczas~transformaty falkowej opisanej w~podsekcji~\ref{subsec:recognition}.
     Zmiana częstotliwości powoduje ponowne obliczenie kodów dla~wszystkich tęczówek w~bazie.
