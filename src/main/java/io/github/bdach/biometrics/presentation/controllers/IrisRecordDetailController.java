@@ -24,7 +24,7 @@ public class IrisRecordDetailController extends RecordDetailController<IrisRecor
     public IrisRecordDetailController(IrisRecord record) {
         super(record);
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/iris_record_detail.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/iris_record_detail.fxml"));
         loader.setController(this);
         try {
             loader.load();

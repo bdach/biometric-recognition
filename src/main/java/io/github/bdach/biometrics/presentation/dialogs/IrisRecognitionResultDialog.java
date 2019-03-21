@@ -42,7 +42,7 @@ public class IrisRecognitionResultDialog
 
     @Override
     protected String getResourceName() {
-        return "../../views/iris_recognition_result.fxml";
+        return "/iris_recognition_result.fxml";
     }
 
     @Override

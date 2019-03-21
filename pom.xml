@@ -6,7 +6,7 @@
 
     <groupId>io.github.bdach</groupId>
     <artifactId>biometric-recognition</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.2.0</version>
     <build>
         <plugins>
             <plugin>
@@ -15,6 +15,15 @@
                 <configuration>
                     <source>8</source>
                     <target>8</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <vendor>Bartłomiej Dach</vendor>
+                    <mainClass>io.github.bdach.biometrics.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>

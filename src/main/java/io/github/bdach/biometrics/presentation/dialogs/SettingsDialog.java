@@ -10,7 +10,7 @@ public class SettingsDialog extends Dialog<SettingsDialogController> {
 
     @Override
     protected String getResourceName() {
-        return "../../views/settings.fxml";
+        return "/settings.fxml";
     }
 
     @Override

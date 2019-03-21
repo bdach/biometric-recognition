@@ -6,7 +6,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
 import lombok.Getter;
 
 import java.io.IOException;
@@ -23,7 +22,7 @@ public class ResultDetailController<TRecord extends Record> {
     private RecognitionResult<TRecord> result;
 
     public ResultDetailController() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/result_detail.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/result_detail.fxml"));
         loader.setController(this);
         try {
             loader.load();

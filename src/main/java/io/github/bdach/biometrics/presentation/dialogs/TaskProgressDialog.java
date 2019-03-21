@@ -20,7 +20,7 @@ public class TaskProgressDialog<T> extends Dialog<TaskProgressController<T>> {
 
     @Override
     protected String getResourceName() {
-        return "../../views/task_progress.fxml";
+        return "/task_progress.fxml";
     }
 
     @Override

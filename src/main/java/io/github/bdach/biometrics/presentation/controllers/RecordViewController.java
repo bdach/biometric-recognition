@@ -20,7 +20,7 @@ public class RecordViewController {
     private Record record;
 
     public RecordViewController() {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("../../views/record.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/record.fxml"));
         loader.setController(this);
         try {
             loader.load();

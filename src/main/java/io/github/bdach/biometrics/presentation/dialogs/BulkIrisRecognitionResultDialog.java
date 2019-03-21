@@ -18,7 +18,7 @@ public class BulkIrisRecognitionResultDialog extends Dialog<BulkIrisRecognitionV
 
     @Override
     protected String getResourceName() {
-        return "../../views/bulk_iris_recognition.fxml";
+        return "/bulk_iris_recognition.fxml";
     }
 
     @Override
