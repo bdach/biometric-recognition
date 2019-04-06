@@ -35,7 +35,7 @@ def calculate_MFCC(sample_file):
 
     dct_coefficients = get_dct_coefficients(dct_filter_count, mel_filter_count)
     cepstral_terms = np.dot(dct_coefficients, log_audio)
-    return cepstral_terms.sum(axis=1)
+    return cepstral_terms.transpose()
 
 
 def normalize(audio):
