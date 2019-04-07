@@ -64,15 +64,16 @@ class VoiceClassifier:
         return df.sort_values(by='score')
 
 
-    def classify(self, sample, k=3):
+    def classify(self, sample_filename, k=3):
         """
         Classifies the sample provided using a k-NN classifier with thresholding.
 
-        :param sample: Sample to compare.
-        :type sample: np.ndarray
+        :param sample_filename: Filename of sample to compare.
+        :type sample_filename: str
         :returns: The label returned by the classifier.
                   Can be None if the classifier rejects all training samples during the thresholding.
         """
+        sample = calculate_MFCC(sample_filename)
         all_scores = self.calculate_scores(sample)
         thresholded_scores = all_scores[all_scores['score'] <= self.threshold]
         if len(thresholded_scores) == 0:
@@ -80,5 +81,7 @@ class VoiceClassifier:
         top_scores = thresholded_scores.head(k)
         labels = top_scores.groupby('label').count()
         scores = labels['score']
-        return labels[scores == np.max(scores)].sample().index[0]
+        if sum(scores == np.max(scores)) > 1:
+            return None
+        return scores.idxmax()
 
