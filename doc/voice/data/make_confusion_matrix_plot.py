@@ -22,9 +22,12 @@ def main():
     arguments = parser.parse_args()
     data_file = arguments.data_file[0]
     
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(6, 6))
     data = pd.read_csv(data_file, index_col=0)
     seaborn.heatmap(data, annot=True)
+    plt.yticks(rotation=0)
+    plt.xticks(rotation=90)
+    plt.subplots_adjust(bottom=0.25, left=0.25)
 
     if arguments.output:
         plt.savefig(arguments.output[0])
