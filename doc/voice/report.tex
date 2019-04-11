@@ -30,11 +30,19 @@
 \author{Bartłomiej Dach}
 \maketitle
 
-% TODO: dwa zdania wprowadzenia
-%Poniższy dokument stanowi sprawozdanie z~implementacji aplikacji dokonującej rozpoznawania człowieka na~podstawie tęczówki wysegmentowanej ze~zdjęć oczu.
-%W~dokumencie opisano zastosowane metody segmentacji, przetwarzania i~porównywania obrazów tęczówek oraz~zawarto wyniki działania dla~wybranych przykładowych obrazów wejściowych.
+Poniższy dokument stanowi sprawozdanie z~implementacji aplikacji dokonującej rozpoznawania człowieka na~podstawie zarejestrowanych próbek głosu.
+W~dokumencie opisano zastosowaną metodę opartą na~współczynnikach mel-cepstralnych oraz~zawarto wyniki działania dla~próbek zarejestrowanych przez~studentów uczęszczających na~zajęcia.
 
 \section{Wstęp}
+
+Ludzki głos jest cechą biometryczną z~pogranicza cech biologicznych i~behawioralnych.
+Podczas gdy barwa głosu jest determinowana przez~wrodzone czynniki anatomiczne, ton głosu i~akcent stosowany podczas~wymawiania określonych fraz stanowi cechę nabytą podczas nauki mowy.
+
+Rozpoznawanie człowieka na~podstawie mowy to~prężnie rozwijające~się zagadnienie.
+Ze~względu na~rosnącą popularność urządzeń interpretujących frazy wymawiane przez~użytkowników takich, jak~Google Home czy~Amazon Echo, identyfikacja na~podstawie głosu stanowi ważny kierunek rozwoju.
+
+W~ramach projektu zaimplementowano prostą metodę klasyfikacji próbek na~podstawie danego wcześniej zbioru treningowego, używającą współczynników mel-cepstralnych.
+Szczegółowy opis metody znajduje~się w~sekcji~\ref{sec:method}.
 
 \section{Opis aplikacji}
 
@@ -64,6 +72,7 @@
 \subsection{Instrukcja obsługi}
 
 \section{Opis metody}
+\label{sec:method}
 
 \subsection{Wyznaczanie współczynników mel-cepstralnych}
 
