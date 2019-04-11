@@ -73,7 +73,7 @@ def main():
 
 def get_samples(sample_dir, phrase):
     files = os.listdir(sample_dir)
-    regex = r'(?P<label>speaker_\d{2})_' + phrase + r'_(?P<sample_no>\d+).wav'
+    regex = r'(?P<label>speaker_\d{2})_' + phrase + r'_(?P<sample_no>\d+)\.wav'
     pattern = re.compile(regex)
     after_regex = [pattern.match(filename) for filename in files]
     matches = [(os.path.join(sample_dir, match.group(0)), match.group('label'), int(match.group('sample_no'))) \
