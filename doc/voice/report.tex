@@ -121,6 +121,7 @@ Prawidłowe wywołanie skryptu powoduje wypisanie na~wyjście linii poleceń wyn
 W~zależności od~wyniku klasyfikatora próbka może być zakwalifikowana jako~należąca do~jednego z~mówców, lub~jako nieznana próbka.
 
 \subsubsection{Skrypt \texttt{crossvalidator.py}}
+\label{subsubsec:crossvalidator}
 
 Drugi ze~skryptów o~nazwie \texttt{crossvalidator.py} dokonuje kroswalidacji algorytmu klasyfikacji na~podstawie podanego zbioru próbek.
 Składnia wykonania skryptu~to:
@@ -269,11 +270,21 @@ W~ten sposób otrzymujemy jedną liczbę, określającą podobieństwo próbki w
 Zatem można obliczyć taką odległość dla~wszystkich próbek treningowych i~zastosować dowolne proste klasyfikatory, takie~jak~np.~$k$-NN (który zastosowano w~zaimplementowanym programie).
 
 W~celu uniknięcia fałszywej identyfikacji osób niebędących w~bazie treningowej jako~jedna z~istniejących, przed klasyfikacją przy~pomocy $k$-NN wprowadzono progowanie odległości między~próbkami.
-Po~obliczeniu odległości między próbką klasyfikowaną a~wszystkimi treningowymi, te~próbki treningowe, które mają większą odległość niż~zadany próg~$t$ od~klasyfikowanej są~odrzucane.
+Po~obliczeniu odległości między próbką klasyfikowaną a~wszystkimi treningowymi, te~próbki treningowe, które mają większą odległość niż~zadany próg~$t$ od~klasyfikowanej, są~odrzucane.
 Klasyfikator $k$-NN operuje tylko na~pozostałych punktach.
 
 \section{Wyniki eksperymentalne}
 \label{sec:results}
+
+Zaimplementowany potok~przetwarzania i~klasyfikacji został przetestowany na~zebranym wewnętrznie przez~studentów uczęszczających na~zajęcia z~przedmiotu zbiorze próbek głosu.
+W~momencie przeprowadzenia testów w~zbiorze znajdowały~się 84~pliki dźwiękowe, składające~się z~trzech nagrań czterech fraz wypowiadanych przez~7 mówców.
+Zarejestrowane frazy to:
+\begin{itemize}
+    \item słowo \emph{biometria},
+    \item słowo \emph{chrząszcz},
+    \item słowo \emph{poniedziałek},
+    \item zdanie \emph{Jutro pojadę na~wycieczkę albo zostanę w~domu.}
+\end{itemize}
 
 \begin{figure}
     \centering
@@ -282,6 +293,17 @@ Klasyfikator $k$-NN operuje tylko na~pozostałych punktach.
     Oddzielono wyniki dla~każdej z~czterech rejestrowanych fraz.}
     \label{fig:acceptance-rates}
 \end{figure}
+Testy klasyfikatora polegały na~kroswalidacji przy~użyciu skryptu \texttt{crossvalidate.py}, którego działanie opisano w~podsekcji~\ref{subsubsec:crossvalidator}.
+Na~podstawie plików wygenerowanych przez~ten skrypt opracowano wykresy FAR i~FRR (rysunek~\ref{fig:acceptance-rates}) i~macierze pomyłek dla~najlepszych wartości progu (rysunek~\ref{fig:confusion-matrices}).
+
+Wyniki uzyskane w~eksperymentach są~bardzo dobre --- przy~korzystnym dobraniu progu dla~danej frazy identyfikacja oprócz pojedynczych pomyłek kończy~się zwróceniem właściwego wyniku.
+Dla~zdania o~wycieczce udało~się zupełnie wyeliminować pomyłki, dla~jednego z~mówców zdarzały~się jednak fałszywe odrzucenia.
+Optymalne progi dla~wszystkich fraz oscylowały w~okolicy wartości $t = 1000$.
+
+Biorąc pod~uwagę prostotę zaimplementowanego rozwiązania są~to~bardzo satysfakcjonujące wyniki.
+Z~wyników można wnioskować, że~dla~dobrego działania algorytmu korzystne jest gromadzenie jak~najdłuższych próbek (najlepsze wyniki odnotowano dla~najdłuższej wypowiadanej frazy).
+Można również domniemywać, że~zwiększenie liczby próbek treningowych dla~każdej frazy jeszcze bardziej polepszyłoby jakość klasyfikacji --- w~testach zbiór treningowy zawierał po~2 próbki każdej frazy, przy zastosowaniu klasyfikatora 3-NN.
+Zwiększenie liczby próbek najprawdopodobniej zwiększyłoby stabilność procesu identyfikacji.
 
 \begin{figure}
     \centering
@@ -305,6 +327,7 @@ Klasyfikator $k$-NN operuje tylko na~pozostałych punktach.
         \caption{Macierz pomyłek dla~zdania \emph{Jutro pojadę na~wycieczkę, albo~zostanę w~domu} przy~progu~$t = 1100$.}
     \end{subfigure}
     \caption{Macierze pomyłek dla~wartości progu minimalizujących liczbę fałszywych pozytywów i~negatywów dla~poszczególnych zarejestrowanych fraz.}
+    \label{fig:confusion-matrices}
 \end{figure}
 
 \section{Podsumowanie}
@@ -321,7 +344,6 @@ Klasyfikator $k$-NN operuje tylko na~pozostałych punktach.
         1974.
 
     \bibitem{hunter2007}
-        Hunter, J.D.,
         ,,Matplotlib: A~2D~graphics environment'',
         \emph{Computing In~Science \& Engineering},
         tom~9,
