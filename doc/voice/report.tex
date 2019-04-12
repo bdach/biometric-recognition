@@ -114,7 +114,7 @@ gdzie:
     \item Parametry \texttt{TRAIN\_SAMPLE} to~ścieżki do~próbek używanych do~treningu klasyfikatora.
         Pliki z~próbkami powinny mieć nazwę zawierającą podciąg \texttt{speaker\_XX}, gdzie~\texttt{XX} to~numer~identyfikujący mówcę.
         Wymagane jest podanie co~najmniej jednej próbki.
-    \item Parametr \texttt{SAMPLE} to~ścieżka do~pró”ki, która powinna być zaklasyfikowana.
+    \item Parametr \texttt{SAMPLE} to~ścieżka do~próbki, która powinna być zaklasyfikowana.
         Możliwe jest podanie tylko jednej próbki.
 \end{itemize}
 Prawidłowe wywołanie skryptu powoduje wypisanie na~wyjście linii poleceń wyniku klasyfikacji.
@@ -153,10 +153,124 @@ Wykresy z~sekcji~\ref{sec:results} zostały wygenerowane na~podstawie tych plik�
 \section{Opis metody}
 \label{sec:method}
 
+U~podstawy zastosowanej metody rozpoznawania głosu leży opracowana przez~Bridle'a i~Browna~\cite{bridle1974} metoda obliczania współczynników melowo-cepstralnych (ang. MFCC --- \emph{mel-frequency cepstral coefficients}).
+Pozwala ona na~przekształcenie sygnału dźwiękowego w~wektory liczbowe, które stanowią cechy, których można użyć w~połączeniu z~klasyfikatorami do~wyznaczenia osoby, do~której należy zarejestrowana próbka.
+Dokładniejszy opis zaimplementowanego algorytmu przetwarzania znajduje~się poniżej.
+
 \subsection{Wyznaczanie współczynników mel-cepstralnych}
 
-\subsection{Klasyfikacja nowych próbek}
+Współczynniki mel-cepstralne obliczane~są zarówno dla~próbek treningowych, jak i~rozpoznawanej próbki.
+Pozwalają one na~znaczną redukcję ilości danych, które trzeba podać do~końcowego klasyfikatora.
+Poszczególne kroki obliczania opisane są w~poniższych akapitach.
+
+\paragraph{Normalizacja.}
+Przed~rozpoczęciem przetwarzania, wejściowy sygnał dźwiękowy jest normalizowany do~zakresu $[0,1]$, aby uprościć obliczenia w~dalszych fazach.
+
+\paragraph{Preemfaza.}
+Po~normalizacji stosowana jest preemfaza, będąca metodą filtracji formującej.
+Eliminuje ona składowe o~niskich częstotliwościach i~wzmacnia te o~wysokich częstotliwościach.
+Z~matematycznego punktu widzenia operację tą opisuje wzór
+$$ s'_i = s_i - a \cdot s_{i - 1} $$
+gdzie $s_i$ to $i$-ta próbka z~sygnału wejściowego, zaś $a$ to~regulowany parametr filtra.
+W~zaimplementowanym wariancie wybrano wartość $a = 0.97$.
+
+\paragraph{Ramkowanie sygnału.}
+Następnie sygnał dzielony jest na~krótkie ramki, dla~których wyznaczane będą współczynniki melowo-cepstralne.
+Ramki mogą na~siebie nachodzić.
+W~zaimplementowanym rozwiązaniu zdecydowano~się na~układ ramek, w~którym początki ramek są od~siebie odległe o~15 milisekund, co~przy założeniu częstotliwości próbkowania 22050 Hz przekłada~się na
+$$
+\frac{15}{1000} \cdot 22050 \left[ \text{s} \cdot \text{Hz} \right] = 330 $$
+próbek odstępu między kolejnymi ramkami.
+Każda ramka składa~się z~2048 próbek.
+
+\paragraph{Zastosowanie funkcji okna.}
+Sygnał podzielony na~ramki następnie zostaje poddany okienkowaniu.
+Każda z~$N$ próbek w~ramce jest modulowana za~pomocą wybranej funkcji okna $w(n)$ według wzoru:
+$$ s'_i = s_i \cdot f(i) $$
+gdzie $i = 0, \dots, N - 1$ to~numer próbki w~ramce.
+Przy~wyznaczaniu MFCC najczęściej stosowane jest okno~Hamminga, określone wzorem
+$$ w(n) = a - (1 - a) \cos \left( 2\pi \frac{n-1}{N-1} \right) $$
+gdzie $a = \frac{25}{46} \approx 0.54$.
+Wykres funkcji okna~Hamminga dla~$N = 2048$ znajduje~się na~rysunku~\ref{fig:hamming-window}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{res/plots/hamming_window.pdf}
+    \caption{Wykres funkcji okna~Hamminga dla~$N = 2048$ próbek.}
+    \label{fig:hamming-window}
+\end{figure}
+
+\paragraph{Szybka transformata Fouriera.}
+Okienkowany sygnał jest następnie przekształcany z~dziedziny czasowej w~dziedzinę częstotliwościową przy~pomocy szybkiej dyskretnej transformaty Fouriera (ang. FFT, \emph{fast Fourier transform}), określonej wzorem:
+$$ X_k = \sum_{n = 0}^{N - 1} x_n \cdot \exp \left( -\frac{2 \pi i}{N} kn \right) $$
+gdzie $k = 0, \dots, N - 1$.
+W~zastosowanym schemacie przetwarzania przyjęto, że każde z~okien transformowanych przy~pomocy FFT składa~się z~$N = 2048$ próbek.
+W~wyniku przekształceń uzyskiwane jest~zatem 2048 liczb zespolonych.
+
+\paragraph{Obliczanie mocy sygnału.}
+W~celu powrotu do~dziedziny liczb rzeczywistych, zespolone współczynniki dyskretnej transformaty Fouriera są~przekształcane poprzez wzięcie kwadratu ich~modułu:
+$$ X'_k = |X_k|^2 $$
+
+\paragraph{Zastosowanie filtrów trójkątnych.}
+Po~obliczeniu mocy sygnału każde okno ma~postać wektora rzeczywistego o~długości~2048.
+W~celu dalszej analizy tworzone jest 16~filtrów trójkątnych, rozłożonych równomiernie w~przedziale~$[0,2048]$ w~skali melowej.
+Skala melowa jest skalą częstotliwości, w~przybliżeniu proporcjonalną do~logarytmu częstotliwości w~hercach.
+Konwersja między skalą melową a~hercową odbywa~się poprzez zastosowanie wzorów:
+\begin{align*}
+    x \; [\text{Hz}] &\rightarrow 2595 + \log_{10} \left( 1 + \frac{x}{700} \right) \; [\text{mel}] \\
+    x \; [\text{mel}] &\rightarrow 700 \cdot \left( 10^{x - 2595} - 1 \right) \; [\text{Hz}]
+\end{align*}
+Filtry trójkątne są~ponadto normalizowane pod~względem pola trójkąta w~skali hercowej:
+$$ f^j_\text{norm}(n) = \frac{f^j(n)}{\sum_{i=1}^{N} f^j(i)} $$
+gdzie~$j$ oznacza numer filtra, $j = 0, \dots, 15$.
+Ostateczną postać krzywych filtrów obrazuje rysunek~\ref{fig:filtering}.
+
+Filtry są~stosowane dla~każdego okna poprzez~wymnożenie próbek z~okna z~wartością filtra:
+$$ p_j = \sum_{k=0}^{N - 1} X'_k \cdot f^j_\text{norm}(k) $$ 
+gdzie $j$~oznacza numer filtra, $j = 0, \dots, 15$, zaś~$k$ --- numer współczynnika transformaty, $k = 0, \dots, 2047$.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{res/plots/filters.pdf}
+    \caption{Zbiór $k = 16$ filtrów trójkątnych rozłożonych równomiernie w~paśmie melowym stosowanych do~filtracji.}
+    \label{fig:filtering}
+\end{figure}
+
+\paragraph{Logarytmowanie mocy po~filtracji.}
+W~wyniku zastosowania filtrów trójkątnych dla~każdego okna uzyskiwany jest wektor długości~16, reprezentujący jedno z~przefiltrowanych pasm częstotliwościowych.
+W~celu zamodelowania nieliniowej odpowiedzi ludzkiego ucha na~bodźce, wektory te są~logarytmowane element po~elemencie, np.~według wzoru
+$$ p'_j = 10 \log_{10} p_j $$
+
+\paragraph{Dyskretna transformata kosinusowa.}
+Ostatecznie, dane z~pasm dla~każdego okna są~transformowane przy~pomocy dyskretnej transformaty kosinusowej (ang.~DCT, \emph{discrete cosine transform}).
+Końcowe wartości współczynników MFCC dla~każdego okna liczone~są wg~wzoru
+$$ c_i = \sqrt{\frac{2}{M}} \sum_{j=0}^{M - 1} p'_j \cos \left( \frac{\pi i}{M} \left(j + \frac{1}{2} \right) \right) $$
+gdzie $i$~to~numer wspólczynnika transformaty kosinusowej (w~projekcie wybrano $i = 0, \dots, 39$), $M = 16$~to~liczba zastosowanych filtrów trójkątnych.
+
+W~rezultacie strumień przetwarzania zwraca macierz rozmiaru~$40 \times W$, gdzie $W$ to liczba okien, na~które podzielona została próbka głosu, zależna od~jej długości w~sekundach.
+
+\subsection{Klasyfikacja próbek weryfikowanych}
 \label{subsec:classification}
+
+Niech dany będzie zbiór $N$ próbek z~głosu razem z~etykietami: $\{ (s_1, c_1), \dots, (s_N, c_N) \}$, gdzie $s_i$ to~współczynniki cepstralne wyznaczone z~$i$-tej próbki, zaś $c_i$ będzie etykietą identyfikującą mówcę zarejestrowanego w~danej próbce.
+Klasyfikacja nieznanej próbki rozpoczyna~się obliczeniem jej współczynników cepstralnych, które oznaczymy przez~$s'$.
+
+Oznaczmy~przez $s_i^j$ współczynniki cepstralne $j$-tego okna $i$-tej próbki treningowej ($j = 0, \dots, W_i - 1$) i~przez $s'^j$ współczynniki $j$-tego okna identyfikowanej próbki ($j = 0, \dots, W' - 1$).
+Dodatkowo zdefiniujmy miarę odległości współczynników cepstralnych dwóch okien jako~odległość euklidesową:
+$$ d(s'_j, s_i^k) = \lVert s'_j - s_i^k \rVert_2 $$
+Wówczas możemy zdefiniować odległość próbki identyfikowanej od~jednej z~próbek treningowych wzorem
+$$ d(s_i, s') = \frac{1}{W'} \sum_{j=0}^{W' - 1} \min_{k=0, \dots, W_k - 1} d(s'_j, s_i^k) $$
+Interpretacja tej odległości jest następująca:
+\begin{itemize}
+    \item dla~każdego okna próbki identyfikowanej obliczamy odległość współczynników okna od~współczynników wszystkich okien próbki treningowej,
+    \item wybieramy najmniejsze takie odległości dla~każdego okna próbki identyfikowanej i~sumujemy je.
+\end{itemize}
+W~ten sposób otrzymujemy jedną liczbę, określającą podobieństwo próbki weryfikowanej i~próbki treningowej.
+Zatem można obliczyć taką odległość dla~wszystkich próbek treningowych i~zastosować dowolne proste klasyfikatory, takie~jak~np.~$k$-NN (który zastosowano w~zaimplementowanym programie).
+
+W~celu uniknięcia fałszywej identyfikacji osób niebędących w~bazie treningowej jako~jedna z~istniejących, przed klasyfikacją przy~pomocy $k$-NN wprowadzono progowanie odległości między~próbkami.
+Po~obliczeniu odległości między próbką klasyfikowaną a~wszystkimi treningowymi, te~próbki treningowe, które mają większą odległość niż~zadany próg~$t$ od~klasyfikowanej są~odrzucane.
+Klasyfikator $k$-NN operuje tylko na~pozostałych punktach.
 
 \section{Wyniki eksperymentalne}
 \label{sec:results}
@@ -196,6 +310,15 @@ Wykresy z~sekcji~\ref{sec:results} zostały wygenerowane na~podstawie tych plik�
 \section{Podsumowanie}
 
 \begin{thebibliography}{9}
+
+    \bibitem{bridle1974}
+        Bridle, J.S.,
+        Brown, M.D.,
+        ,,An~Experimental Automatic Word-Recognition System'',
+        \emph{JSRU Report},
+        nr~1003,
+        Joint Speech Research Unit,
+        1974.
 
     \bibitem{hunter2007}
         Hunter, J.D.,
