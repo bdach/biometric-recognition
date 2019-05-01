@@ -1,0 +1,7 @@
+# Python cached code
+**/__pycache__/
+*.pyc
+
+# Data that should not be added to the repo
+*.dat
+*.csv

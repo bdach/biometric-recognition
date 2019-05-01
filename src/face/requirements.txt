@@ -1,0 +1,5 @@
+dlib==19.17.0
+matplotlib==3.0.3
+pandas==0.24.2
+tqdm==4.31.1
+
