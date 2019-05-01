@@ -8,10 +8,14 @@ from tqdm import tqdm
 
 
 parser = argparse.ArgumentParser(description='Face recognition using dlib and pre-trained models.')
-parser.add_argument('training_set',
+input_group = parser.add_mutually_exclusive_group(required=True)
+input_group.add_argument('-d', '--directory',
         metavar='TRAINING_SET_DIR',
         nargs=1,
-        help='directory with the training face images')
+        help='directory with the training face images to calculate embeddings for')
+input_group.add_argument('-f', '--embedding-file',
+        nargs=1,
+        help='path to csv file with precalculated embeddings and labels')
 parser.add_argument('test_image',
         metavar='TEST_IMAGE',
         nargs=1,
@@ -29,6 +33,10 @@ parser.add_argument('-t', '--threshold',
         type=float,
         default=0.6,
         help='distance threshold for classification')
+parser.add_argument('-o', '--output-embeddings',
+        nargs=1,
+        type=str,
+        help='path under which to store the training set embeddings csv file')
 
 
 def main():
@@ -37,7 +45,14 @@ def main():
     shape_predictor = dlib.shape_predictor(args.landmark_model)
     recognition_model = dlib.face_recognition_model_v1(args.recognition_model)
 
-    dataset = load_dataset(args.training_set[0], face_detector, shape_predictor, recognition_model)
+    if args.directory:
+        dataset = load_dataset(args.directory[0], face_detector, shape_predictor, recognition_model)
+    else:
+        print('Loading embeddings from {}.'.format(args.embedding_file[0]))
+        dataset = pd.read_csv(args.embedding_file[0], index_col=0)
+    if args.output_embeddings:
+        print('\t* Embeddings written to {}.'.format(args.output_embeddings[0]))
+        dataset.to_csv(args.output_embeddings[0])
     test_embeddings = get_embeddings_from_test_image(args.test_image[0], face_detector, shape_predictor, recognition_model)
     classify_faces(dataset, test_embeddings, args.threshold)
 
@@ -88,6 +103,8 @@ def classify_faces(train, test, threshold):
     with tqdm(test.iterrows(), total=len(test)) as bar:
         for idx, row in bar:
             train_embeddings = train.iloc[:, :-1]
+            # cast to int for safety - reimport from csv file screws up the index (strings instead of integers)
+            train_embeddings.columns = train_embeddings.columns.astype(int)
             distances = np.sum(np.power(train_embeddings - row, 2), axis=1)
             thresholded_dists = distances[distances < threshold].sort_values(ascending=True)
             if len(thresholded_dists) > 1:
