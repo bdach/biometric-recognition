@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 
+from landmarks import LandmarkNormalizer, DlibFaceRecognitionModel
+
 
 parser = argparse.ArgumentParser(description='Face recognition using dlib and pre-trained models.')
 input_group = parser.add_mutually_exclusive_group(required=True)
@@ -23,15 +25,19 @@ parser.add_argument('test_image',
 parser.add_argument('-l', '--landmark-model',
         nargs=1,
         default='shape_predictor_68_face_landmarks.dat',
-        help='path to the landmark prediction model data file')
-parser.add_argument('-r', '--recognition-model',
+        help='use dlib\'s face recognition model using model data file provided')
+method_group = parser.add_mutually_exclusive_group(required=True)
+method_group.add_argument('-n', '--normalized-landmarks',
+        action='store_true',
+        help='use normalized facial landmarks for face recognition')
+method_group.add_argument('-r', '--recognition-model',
         nargs=1,
         default='dlib_face_recognition_resnet_model_v1.dat',
         help='path to the face embedding model data file')
 parser.add_argument('-t', '--threshold',
         nargs=1,
         type=float,
-        default=0.6,
+        default=[0.6],
         help='distance threshold for classification')
 parser.add_argument('-o', '--output-embeddings',
         nargs=1,
@@ -43,7 +49,10 @@ def main():
     args = parser.parse_args()
     face_detector = dlib.get_frontal_face_detector()
     shape_predictor = dlib.shape_predictor(args.landmark_model)
-    recognition_model = dlib.face_recognition_model_v1(args.recognition_model)
+    if args.normalized_landmarks:
+        recognition_model = LandmarkNormalizer()
+    else:
+        recognition_model = DlibFaceRecognitionModel(args.recognition_model[0])
 
     if args.directory:
         dataset = load_dataset(args.directory[0], face_detector, shape_predictor, recognition_model)
@@ -54,13 +63,13 @@ def main():
         print('\t* Embeddings written to {}.'.format(args.output_embeddings[0]))
         dataset.to_csv(args.output_embeddings[0])
     test_embeddings = get_embeddings_from_test_image(args.test_image[0], face_detector, shape_predictor, recognition_model)
-    classify_faces(dataset, test_embeddings, args.threshold)
+    classify_faces(dataset, test_embeddings, args.threshold[0])
 
 
 def load_dataset(training_set, detector, predictor, recognizer):
     label_file = os.path.join(training_set, 'labels.csv')
     labels = pd.read_csv(label_file, index_col=0)
-    embeddings = pd.DataFrame(index=labels.index, columns=range(128))
+    embeddings = pd.DataFrame(index=labels.index, columns=range(recognizer.result_length))
     
     print('Generating training embeddings.')
     with tqdm(labels.iterrows(), total=len(labels)) as bar:
