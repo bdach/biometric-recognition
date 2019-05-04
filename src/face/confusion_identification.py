@@ -54,7 +54,7 @@ def main():
     distance_matrix = calculate_pairwise_distances(dataset)
     confusion_matrix = calculate_confusion_matrix(dataset, distance_matrix)
 
-    confusion_matrix_filename = args.out_file_prefix + '_confusion_matrix.csv'
+    confusion_matrix_filename = args.out_file_prefix[0] + '_confusion_matrix.csv'
     print('Saving confusion matrix to {}...'.format(confusion_matrix_filename))
     confusion_matrix.to_csv(confusion_matrix_filename)
 
@@ -81,9 +81,8 @@ def calculate_confusion_matrix(dataset, distance_matrix):
     for label in labels:
         label_representatives = dataset['label'] == label
         label_least_distances = best_matches[label_representatives]
-        print(label_least_distances)
         label_classifications = dataset.loc[label_least_distances, 'label'].value_counts()
-        confusion_matrix[label] = label_classifications
+        confusion_matrix.loc[label, :] = label_classifications
     confusion_matrix = confusion_matrix.fillna(0).astype(int)
     return confusion_matrix
 
