@@ -48,7 +48,15 @@ Dokładniejsze informacje znajdują~się w~podrozdziale~\ref{subsec:classificati
 
 \section{Opis aplikacji}
 
+Opracowana aplikacja została zaimplmentowana w~języku skryptowym Python w~wersji 3.5.2.
+Wybór umotywowany był minimalizacją czasu implementacji poprzez wykorzystanie istniejących bibliotek \emph{open source}.
+Aplikacja ma postać zbioru skryptów konsolowych --- zdecydowano~się na~rezygnację z~interfejsu graficznego ze~względu na~jego niewielką przydatność w~stosunku do~czasu implementacji.
+Sposób wywołania skryptów opisano w~podrozdziale~\ref{sec:manual}.
+
 \subsection{Zastosowane biblioteki}
+
+W~implementacji zastosowano zbiór bibliotek \emph{open source} ułatwiających implementację systemu.
+Pełna lista zastosowanych bibliotek znajduje~się w~tabeli~\ref{tbl:libraries}.
 
 \begin{table}[H]
     \begin{tabularx}{\textwidth}{|r|l|X|l|c|}
@@ -79,7 +87,82 @@ Aby~zainstalować wymagane biblioteki, należy wywołać polecenie
 \begin{verbatim}
 $ pip3 install -r requirements.txt
 \end{verbatim}
-gdzie plik \texttt{requirements.txt} to~plik dołączony do~źródeł aplikacji.
+gdzie plik \texttt{requirements.txt} to~plik dołączony do~źródeł aplikacji
+
+\subsubsection{Skrypt \texttt{recognize.py}}
+
+Skrypt \texttt{recognize.py} pozwala na~sprawdzenie, czy twarze na~podanym zdjęciu należą do~osób z~podanego zbioru treningowego.
+Wykonywanie skryptu powinno być zgłodne ze~składnią:
+
+\begin{minipage}{\linewidth}
+\begin{verbatim}
+recognize.py [-h] (-d TRAINING_SET_DIR | -f EMBEDDING_FILE)
+             [-l LANDMARK_MODEL] (-n | -r RECOGNITION_MODEL)
+             [-t THRESHOLD] [-o OUTPUT_EMBEDDINGS]
+             TEST_IMAGE
+\end{verbatim}
+\end{minipage}
+
+gdzie poszczególne argumenty to:
+\begin{itemize}
+    \item \verb+-h+ --- wyświetla pomoc,
+    \item \verb+-d TRAINING_SET_DIR+ --- oznacza, że wektory cech dla zdjęć ze~zbioru testowego powinny~być obliczone na~podstawie zdjęć z~podanego folderu \verb+TRAINING_SET_DIR+,
+    \item \verb+-f EMBEDDING_FILE+ --- oznacza, że wektory cech dla zdjęć ze~zbioru testowego powinny~być wczytane z~istniejącego pliku \verb+EMBEDDING_FILE+,
+    \item \verb+-l LANDMARK_MODEL+ --- zawiera ścieżkę do~pliku zawierającego model używany do~lokalizacji punktów charakterystycznych twarzy.
+        W~przypadku braku tego parametru domyślnie zachodzi próba użycia pliku o~nazwie
+        \begin{verbatim}shape_predictor_68_face_landmarks.dat\end{verbatim}
+        z~katalogu roboczego.
+    \item \verb+-n+ --- oznacza, że do~rozpoznawania ma~być zastosowany własny algorytm normalizacji punktów charakterystycznych,
+    \item \verb+-r RECOGNITION_MODEL+ --- oznacza, że do~rozpoznawania ma~być zastosowany wytrenowany model ResNet załadowany z~pliku \verb+RECOGNITION_MODEL+,
+    \item \verb+-t+ --- oznacza próg liczbowy, którego przekroczenie powoduje odrzucenie zdjęcia ze~zbioru testowego przy~klasyfikacji twarzy,
+    \item \verb+-o OUTPUT_EMBEDDINGS+ --- pozwala na~zapisanie wektorów cech po~wyznaczeniu punktów charakterystycznych do~pliku,
+    \item \verb+TEST_IMAGE+ --- ścieżka do~zdjęcia z~twarzami do~identyfikacji.
+\end{itemize}
+
+\subsubsection{Skrypt \texttt{confusion\_verification.py}}
+
+Skrypt \texttt{confusion\_verification.py} dokonuje testu wybranego klasyfikatora dla~zadania weryfikacji tożsamości.
+Składnia wywołania powinna być zgodna z~następującym wzorcem:
+
+\begin{minipage}{\linewidth}
+\begin{verbatim}
+confusion_verification.py [-h]
+                          (-d TRAINING_SET_DIR | -f EMBEDDING_FILE)
+                          [-l LANDMARK_MODEL]
+                          (-n | -r RECOGNITION_MODEL)
+                          [-o OUT_FILE_PREFIX]
+\end{verbatim}
+\end{minipage}
+
+Wszystkie parametry poza \verb+-o+ mają to~samo znaczenie, co w~przypadku skryptu \texttt{recognize.py}.
+Flaga \verb+-o+ oznacza w~tym przypadku prefiks dla~plików tworzonych przez skrypt.
+
+Wynikiem skryptu są~dwa pliki:
+\begin{enumerate}
+    \item Pierwszy plik o~sufiksie \verb+distance_matrix.csv+ zawiera symetryczną macierz odległości Euklidesa między wektorami cech wyznaczonymi przez~klasyfikator na~podstawie punktów charakterystycznych.
+    \item Drugi plik o~sufiksie \verb+error_rates.csv+ zawiera stosunki błędów w~zadaniu weryfikacji w~zależności od~przyjętego progu.
+        Dla każdej pary obrazów klasyfikator uznaje dwa obrazy za~obrazy tej samej osoby, jeśli odległość Euklidesa między ich~wektorami cech jest mniejsza niż~przyjęty próg.
+        Na~tej podstawie obliczane~są wskaźniki FAR i~FRR.
+\end{enumerate}
+
+\subsubsection{Skrypt \texttt{confusion\_identification.py}}
+
+Skrypt \texttt{confusion\_identification.py} dokonuje testu wybranego klasyfikatora dla zadania identyfikacji osoby na~zdjęciu.
+Składnia wywołania powinna być zgodna z~następującym wzorcem:
+
+\begin{minipage}{\linewidth}
+\begin{verbatim}
+confusion_identification.py [-h]
+                            (-d TRAINING_SET_DIR | -f EMBEDDING_FILE)
+                            [-l LANDMARK_MODEL]
+                            (-n | -r RECOGNITION_MODEL)
+                            [-o OUT_FILE_PREFIX]
+\end{verbatim}
+\end{minipage}
+
+gdzie parametry są~interpretowane tak samo, jak w~skrypcie \verb+confusion_identification.py+.
+Wynikiem skryptu jest pojedynczy plik o~sufiksie \verb+confusion_matrix.csv+, zawierający macierz pomyłek obliczoną dla~klasyfikatora.
+Wiersze macierzy oznaczają etykietę osoby na~zdjęciu (wzorcową), zaś kolumny --- etykietę zwróconą przez~klasyfikator.
 
 \section{Opis metody}
 
