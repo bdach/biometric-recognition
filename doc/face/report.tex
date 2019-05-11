@@ -166,23 +166,78 @@ Wiersze macierzy oznaczają etykietę osoby na~zdjęciu (wzorcową), zaś kolumn
 
 \section{Opis metody}
 
+Proces rozpoznawania na~podstawie zdjęcia można podzielić na~dwa podstawowe etapy.
+Pierwszy z~nich zajmuje~się lokalizacją twarzy na~obrazie, poprzez określenie prostokątnego obszaru, w~którym zawierają~się znalezione twarze.
+Drugi zaś zajmuje~się faktycznym rozpoznawaniem.
+
+Istnieje wiele podejść do~rozpoznawania; część z~nich, jak np.~metoda twarzy własnych, operuje bezpośrednio na~znalezionym fragmencie obrazu z~twarzą, podczas gdy~inne opierają~się na~lokalizacji i~przetwarzaniu tzw.~punktów charakterystycznych, czyli ustalonych punktów związanych z~anatomią i~geometrią twarzy.
+W~ramach projektu skorzystano z~tego drugiego podejścia.
+
+Po~wyznaczeniu punktów charakterystycznych następuje proces ich przekształcenia na~cechy, które wykorzystywane są przez~końcowy klasyfikator.
+W~projekcie porównano dwa podejścia, opisane szerzej w~podrozdziale~\ref{subsec:classification}.
+
 \subsection{Rozpoznawanie twarzy na~zdjęciu}
 
+Do~implementacji etapu rozpoznawania twarzy wykorzystane zostały gotowe elementy biblioteki \texttt{dlib}.
+Wbudowany w~bibliotekę detektor twarzy w~postaci frontalnej wykorzystuje metodę histogramu zorientowanych gradientów (ang. \emph{Histogram of~Oriented Gradients}, HOG) \cite{dalal2005}.
+
+Ta~metoda po~wstępnej normalizacji i~korekcji gamma oblicza gradient obrazu poprzez~zastosowanie filtrów splotowych do~wykrywania krawędzi.
+Następnie gradienty w~poszczególnych punktach są~gromadzone w~tzw.~komórki, w~ramach których następuje ważone uśredninanie.
+Później, aby zminimalizować wpływ oświetlenia, wykonywana jest lokalna normalizacja kontrastu.
+Na~koniec dwuwymiarowe bloki są~okienkowane (wycinane są~fragmenty obrazu), i~wynikowe okna są~podawane do~klasyfikatora, decydującego, czy układ gradientów w~ramach okna jest zgodny z~szukanym typem obiektu --- w~tym przypadku, frontalnym zdjęciem twarzy.
+
 \subsection{Lokalizacja punktów charakterystycznych}
+
+Po~zlokalizowaniu prostokata ograniczającego twarz, następuje lokalizacja punktów charakterystycznych.
+Istnieje wiele propozycji zbiorów punktów wykorzystywanych przy~identyfikacji; w~tym przypadku zdecydowano~się zastosować układ 68~punktów przedstawionych na~rysunku~\ref{fig:68-landmarks}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.6\textwidth]{res/img/figure_68_markup.jpg}
-    \label{fig:68-landmarks}
     \caption{Wizualizacja 68~punktów charakterystycznych wykorzystywanych do~rozpoznawania twarzy, wytypowanych przez~\emph{Intelligent Behaviour Understanding Group}. Źródło: \cite{sagonas2013}}
+    \label{fig:68-landmarks}
 \end{figure}
+
+W~projekcie zastosowano gotowy model predykcyjny wyznaczający punkty charakterystyczne, wytrenowany na~ręcznie oetykietowanym zbiorze danych ibug~300-W~\cite{king2015}.
+Lokalizuje on~punkty charakterystyczne dla~znalezionych twarzy, które następnie wykorzystywane~są do~ekstrakcji cech.
 
 \subsection{Klasyfikacja twarzy na~podstawie punktów charakterystycznych}
 \label{subsec:classification}
 
+Przy~klasyfikacji zastosowano dwa podejścia.
+Pierwsze, nazwane odtąd normalizacyjnym, wykorzystuje wyliczone punkty charakterystyczne, próbując wyeliminować wpływ obrotów i~skalowania na~działanie klasyfikatora.
+Z~kolei drugie opiera~się na~sieciach neuronowych opartych na~architekturze ResNet~\cite{he2015}.
+
 \subsubsection{Podejście normalizacyjne}
 
+Przy~podejściu normalizacyjnym celem jest wyeliminowanie rotacji i~skalowania.
+W~celu wyeliminowania rotacji założono referencyjnie, że~linia od~lewego kącika lewego oka (punkt nr~37) do~prawego kącika prawego oka (punkt nr~46) powinna być pozioma, zaś~grzbiet nosa (linia od~punktu~28 do~punktu~34) --- pionowa.
+
+Aby to~osiągnąć, zastosowano dwie~operacje ścinania wzdłuż~obu osi obrazu, przeprowadzające $i$-ty punkt charakterystyczny~$(x_i, y_i)$ ($i = 1,\dots,68$) na~punkt~$(x'_i, y'_i)$, którego współrzędne są~określone wzorami
+\begin{align*}
+    x_i' &= x_i - y_i \cdot \frac{x_{34} - x_{27}}{y_{34} - y_{27}} \\
+    y_i' &= y_i - x_i \cdot \frac{y_{46} - y_{37}}{x_{46} - y_{37}}
+\end{align*}
+Następnie w~celu wyeliminowania wpływu skalowania punkty charakterystyczne zostały przeprowadzone na~kwadrat $[-0.5, 0.5] \times [-0.5, 0.5]$, zgodnie z~wzorami
+\begin{align*}
+    x_i'' &= \frac{x'_i - x'_{\min}}{x'_{\max} - x'_{\min}} - 0.5 \\
+    y_i'' &= -\frac{y'_i - y'_{\min}}{y'_{\max} - y'_{\min}} + 0.5
+\end{align*}
+Zmiana znaku na~współrzędnej~Y uzasadniona jest tym, że~piksele obrazów są~indeksowane odwrotnie niż~przyjmuje konwencja matematyczna (tj. współrzędna~Y piksela rośnie w~dół obrazu).
+Po~tych dwóch operacji współrzędne X~i~Y obrazu są~traktowane jako cechy do~klasyfikacji --- to~podejście skutkuje więc uzyskaniem wektora złożonego z~$2 \cdot 68 = 136$ cech.
+Warto zauważyć, że podejście to~ignoruje barwy obrazu, lecz korzysta wyłącznie z~geometrycznych cech twarzy.
+
 \subsubsection{Wykorzystanie klasyfikatora ResNet}
+
+Dla~porównania jako~drugą metodę wykorzystano wytrenowany wcześniej klasyfikator dostarczony przez~twórców biblioteki \texttt{dlib}.
+Tym klasyfikatorem jest sieć neuronowa o~zmodyfikowanym modelu ResNet~\cite{he2015}, o~29 warstwach konwolucyjnych, wytrenowana na~zbiorze danych składającym~się z~ok. 3~milionów twarzy.
+Klasyfikator transformuje punkty charakterystyczne na~wektor w~128-wymiarowej przestrzeni.
+Funkcja błędu była skonstruowana tak, aby~punkty korespondujące z~zdjęciami twarzy jednej osoby stanowiły rozłączne kule o~promieniu 0.6 \cite{king2015}.
+
+\subsubsection{Finalna klasyfikacja}
+
+W~przypadku obu klasyfikatorów przyjęto najprostszą klasyfikację wyjściowych wektorów --- klasyfikator 1-NN.
+Klasyfikacja polega więc na~wyborze wektora reprezentującego twarz ze~zbioru referencyjnego o~najmniejszej odległości w~metryce Euklidesowej od~wektora wyznaczonego dla~identyfikowanej twarzy.
 
 \section{Wyniki eksperymentalne}
 \label{sec:results}
@@ -190,14 +245,14 @@ Wiersze macierzy oznaczają etykietę osoby na~zdjęciu (wzorcową), zaś kolumn
 \begin{figure}[H]
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.6\textwidth]{res/img/normalized_distance_matrix.png}
+        \includegraphics[width=0.5\textwidth]{res/img/normalized_distance_matrix.png}
         \label{subfig:normalized-distance-matrix}
         \caption{Macierz dla~podejścia normalizacyjnego po~przetworzeniu odległości wg~wzoru~$d' = 1 - \frac{1}{d + 1}$.}
     \end{subfigure}
     \\
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.6\textwidth]{res/img/resnet_distance_matrix.png}
+        \includegraphics[width=0.5\textwidth]{res/img/resnet_distance_matrix.png}
         \label{subfig:resnet-distance-matrix}
         \caption{Macierz dla~klasyfikatora ResNet.}
     \end{subfigure}
@@ -256,6 +311,12 @@ Wiersze macierzy oznaczają etykietę osoby na~zdjęciu (wzorcową), zaś kolumn
         \\
         Dostępne: \url{https://tqdm.github.io/}.
         [Dostęp 11~maja~2019]
+
+    \bibitem{dalal2005}
+        Dalal, N.,
+        Triggs, B.,
+        ,,Histograms of~Oriented Gradients for~Human Detection'',
+        \emph{2005 IEEE Computer Society Conference on~Computer Vision and~Pattern Recognition}.
 
     \bibitem{he2015}
         He, K.,
