@@ -29,11 +29,22 @@
 }}
 \author{Bartłomiej Dach}
 \maketitle
-
-%Poniższy dokument stanowi sprawozdanie z~implementacji aplikacji dokonującej rozpoznawania człowieka na~podstawie zarejestrowanych próbek głosu.
-%W~dokumencie opisano zastosowaną metodę opartą na~współczynnikach mel-cepstralnych oraz~zawarto wyniki działania dla~próbek zarejestrowanych przez~studentów uczęszczających na~zajęcia.
+Poniższy dokument stanowi sprawozdanie z~implementacji aplikacji dokonującej rozpoznwania człowieka na~podstawie zdjęć twarzy w~pozycji frontalnej.
+W~dokumencie opisano porównywane metody oraz~zawarto wyniki eksperymentalne dla~obu metod na~dostarczonym zbiorze zdjęć.
 
 \section{Wstęp}
+
+Twarz to~cecha biometryczna zaliczająca~się do~cech biologicznych.
+Większość mierzalnych cech twarzy (geometria, kolor skóry) jest opartych na~cechach anatomicznych lub~etnicznych.
+Z~drugiej strony aspekty takie, jak~zarost czy~wiek utrudniają wykorzystanie tych~cech, ponieważ zmieniają~się z~czasem.
+
+Rozpoznawanie na~podstawie twarzy jest częścią coraz większej liczby urządzeń konsumenckich, szczególnie w~branży urządzeń mobilnych.
+Ponieważ akwizycja obrazu twarzy nie~wymaga bezpośredniego kontaktu, a~coraz~więcej smartfonów posiada kamery po~przedniej stronie, jest to wygodna metoda potwierdzenia tożsamości użytkownika telefonu.
+
+W~ramach projektu zaimplementowano dwie metody oparte na~identyfikacji punktów charakterystycznych twarzy.
+W~obu przypadkach do~znajdowania twarzy na~zdjęciach i~lokalizacji punktów charakterystycznych wykorzystano bibliotekę \texttt{dlib}.
+Metody różnią~się właściwym przetwarzaniem punktów --- w jednej metodzie punkty charakterystyczne wykorzystywane~są bezpośrednio po~pewnych korekcyjnych przekształceniach geometrycznych, zaś w~drugiej w~celu porównania z~rozwiązaniami \emph{state-of-the-art} wykorzystano wytrenowany klasyfikator ResNet \cite{he2015, king2015}.
+Dokładniejsze informacje znajdują~się w~podrozdziale~\ref{subsec:classification}.
 
 \section{Opis aplikacji}
 
@@ -84,6 +95,7 @@ gdzie plik \texttt{requirements.txt} to~plik dołączony do~źródeł aplikacji.
 \end{figure}
 
 \subsection{Klasyfikacja twarzy na~podstawie punktów charakterystycznych}
+\label{subsec:classification}
 
 \subsubsection{Podejście normalizacyjne}
 
@@ -162,6 +174,19 @@ gdzie plik \texttt{requirements.txt} to~plik dołączony do~źródeł aplikacji.
         Dostępne: \url{https://tqdm.github.io/}.
         [Dostęp 11~maja~2019]
 
+    \bibitem{he2015}
+        He, K.,
+        Zhang, X.,
+        Ren, S.,
+        Sun, J.,
+        ,,Deep Residual Learning for Image Recognition'',
+        {\tt arXiv:1512.03385},
+        2015.
+        [Online]
+        \\
+        Dostępne: \url{https://arxiv.org/abs/1512.03385}.
+        [Dostęp 11~maja~2019]
+
     \bibitem{hunter2007}
         ,,Matplotlib: A~2D~graphics environment'',
         \emph{Computing In~Science \& Engineering},
@@ -176,6 +201,14 @@ gdzie plik \texttt{requirements.txt} to~plik dołączony do~źródeł aplikacji.
         [Online]
         \\
         Dostępne: \url{http://dlib.net/}.
+        [Dostęp 11~maja~2019]
+
+    \bibitem{king2015}
+        King, D.,
+        ,,dlib-models''.
+        [Online]
+        \\
+        Dostępne: \url{https://github.com/davisking/dlib-models}.
         [Dostęp 11~maja~2019]
 
     \bibitem{mckinney2010}
