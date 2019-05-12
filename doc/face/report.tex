@@ -106,7 +106,8 @@ recognize.py [-h] (-d TRAINING_SET_DIR | -f EMBEDDING_FILE)
 gdzie poszczególne argumenty to:
 \begin{itemize}
     \item \verb+-h+ --- wyświetla pomoc,
-    \item \verb+-d TRAINING_SET_DIR+ --- oznacza, że wektory cech dla zdjęć ze~zbioru testowego powinny~być obliczone na~podstawie zdjęć z~podanego folderu \verb+TRAINING_SET_DIR+,
+    \item \verb+-d TRAINING_SET_DIR+ --- oznacza, że wektory cech dla zdjęć ze~zbioru testowego powinny~być obliczone na~podstawie zdjęć z~podanego folderu \verb+TRAINING_SET_DIR+.
+        Folder ze~zdjęciami powinien zawierać plik \verb+labels.csv+, zawierającego etykietę przedstawionej osoby dla~każdego zdjęcia ze~zbioru.
     \item \verb+-f EMBEDDING_FILE+ --- oznacza, że wektory cech dla zdjęć ze~zbioru testowego powinny~być wczytane z~istniejącego pliku \verb+EMBEDDING_FILE+,
     \item \verb+-l LANDMARK_MODEL+ --- zawiera ścieżkę do~pliku zawierającego model używany do~lokalizacji punktów charakterystycznych twarzy.
         W~przypadku braku tego parametru domyślnie zachodzi próba użycia pliku o~nazwie
@@ -242,67 +243,101 @@ Klasyfikacja polega więc na~wyborze wektora reprezentującego twarz ze~zbioru r
 \section{Wyniki eksperymentalne}
 \label{sec:results}
 
+W~ramach eksperymentu oba zaimplementowane klasyfikatory porównano pod~względem efektywności w~zadaniach weryfikacji i~identyfikacji tożsamości osób.
+Testy wykonano na~zbiorze 450~zdjęć należących do~31 osób, udostępnionym przez California Institute of~Technology~\cite{cvg}.
+4~zdjęcia zostały odrzucone z~powodu braku rozpoznania twarzy w~pozycji frontalnej.
+
+Weryfikację przetestowano poprzez rozważenie wszystkich możliwych par 446~zdjęć i~użyciu klasyfikatorów do~określenia odległości euklidesowej między tymi zdjęciami.
+Rysunek~\ref{fig:distance-matrix} ilustruje macierze odległości między poszczególnymi parami zdjęć.
+
+Na~podstawie par odległości wyliczono również wskaźniki błędów (FAR i~FRR).
+Przyjmując zmienny próg $t \in [0, 1]$, wektory cech dla~dwóch twarzy rozważano jako należące do~jednej osoby, jeśli ich wzajemna odległość jest mniejsza lub~równa niż~$t$ i~należące do~różnych osób w~przeciwnym przypadku.
+Wartości wskaźników obrazuje wykres~\ref{fig:error-rates}.
+
+Na~podstawie wyznaczonych FAR i~FRR można określić, że klasyfikator normalizacyjny osiągnął EER w~okolicy $2.5\%$, zaś klasyfikator oparty na~sieci ResNet --- zerowy współczynnik równego błędu.
+W~przypadku weryfikacji oba podejścia uzyskały więc dość dobre wyniki na~testowanym zbiorze.
+
 \begin{figure}[H]
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.5\textwidth]{res/img/normalized_distance_matrix.png}
+        \includegraphics[width=0.6\textwidth]{res/img/normalized_distance_matrix.png}
         \label{subfig:normalized-distance-matrix}
         \caption{Macierz dla~podejścia normalizacyjnego po~przetworzeniu odległości wg~wzoru~$d' = 1 - \frac{1}{d + 1}$.}
     \end{subfigure}
     \\
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.5\textwidth]{res/img/resnet_distance_matrix.png}
+        \includegraphics[width=0.6\textwidth]{res/img/resnet_distance_matrix.png}
         \label{subfig:resnet-distance-matrix}
         \caption{Macierz dla~klasyfikatora ResNet.}
     \end{subfigure}
     \caption{Macierze wzajemnych odległości dla~poszczególnych par obrazów ze~zbioru testowego.
     Zauważalne są ciemniejsze bloki wzdłuż~przekątnej, obrazujące podobieństwo wielu obrazów przedstawiających jedną osobę.}
+    \label{fig:distance-matrix}
 \end{figure}
 
 \begin{figure}[H]
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.8\textwidth]{res/img/normalized_error_rates.pdf}
+        \includegraphics[width=0.9\textwidth]{res/img/normalized_error_rates.pdf}
         \label{subfig:normalized-error-rates}
         \caption{Wskaźniki FAR i~FRR dla~podejścia normalizacyjnego.}
     \end{subfigure}
     \\
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.8\textwidth]{res/img/resnet_error_rates.pdf}
+        \includegraphics[width=0.9\textwidth]{res/img/resnet_error_rates.pdf}
         \label{subfig:resnet-error-rates}
         \caption{Wskaźniki FAR i~FRR dla~klasyfikatora ResNet.}
     \end{subfigure}
     \caption{Wartości wskaźników FAR i~FRR w~zależności od~przyjętego progu klasyfikacji w~zadaniu weryfikacji tożsamości na~podstawie par zdjęć.}
+    \label{fig:error-rates}
 \end{figure}
+
+Test dla~zadania identyfikacji przeprowadzono dla~każdego obrazu poprzez obliczanie wektorów cech dla~wszystkich twarzy i~wyborze najbliższego do~wektora wybranego obrazu (w~sensie normy euklidesowej) wektora z~reszty zbioru.
+Taka metoda eliminuje możliwość uzyskania zerowej odległości rozważanego obrazu od~tego samego zbioru w~zbiorze porównawczym.
+
+Wyniki testu obrazują macierze pomyłek przedstawione na~rysunku~\ref{fig:confusion-matrix}.
 
 \begin{figure}[H]
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.8\textwidth]{res/img/normalized_confusion_matrix.pdf}
+        \includegraphics[width=0.85\textwidth]{res/img/normalized_confusion_matrix.pdf}
         \label{subfig:normalized-distance-matrix}
-        \caption{Macierz dla~podejścia normalizacyjnego.}
     \end{subfigure}
     \\
     \begin{subfigure}{\textwidth}
         \centering
-        \includegraphics[width=0.8\textwidth]{res/img/resnet_confusion_matrix.pdf}
+        \includegraphics[width=0.85\textwidth]{res/img/resnet_confusion_matrix.pdf}
         \label{subfig:resnet-distance-matrix}
-        \caption{Macierz dla~klasyfikatora ResNet.}
     \end{subfigure}
     \caption{Macierze pomyłek dla~obu podejść.
     Wiersze odpowiadają etykietom (identyfikatorom osób) oryginalnych zdjęć,
     kolumny odpowiadają etykietym przypisanym zdjęciom przez klasyfikator.}
+    \label{fig:confusion-matrix}
 \end{figure}
 
-\subsection{Podejście normalizacyjne}
-
-\subsection{Klasyfikator ResNet}
+Oba klasyfikatory popełniły niski odsetek pomyłek.
+Klasyfikator normalizacyjny okazał~się jednak dużo gorszy.
+Przyglądając~się przypadkom, w~których zaszła pomyłka, określono, że~jest to~spowodowane brakiem uwzględniania kolorów obrazu przy~klasyfikacji --- zdarzyły~się przypadki, w~których dwie twarze (jedna z~zarostem, jedna bez) zostały uznane jako~należące do~jednej osoby z~powodu zbliżonej geometrii.
+Z~kolei klasyfikator ResNet, który stosuje warstwy konwolucyjne, unika tego typu błędów i wykazuje znacznie mniejszą liczbę pomyłek (zdarzyły~się tylko 4~razy).
 
 \section{Podsumowanie}
 
+Rozpoznawanie człowieka na~podstawie zdjęć twarzy stanowi przyszłościowy aspekt badań biometrycznych.
+Jak~widać po~uzyskanych wynikach, istniejące podejścia oparte na~uczeniu maszynowym i~sieciach neuronowych uzyskują bardzo dobre wyniki w~zadaniu weryfikacji i~identyfikacji człowieka.
+Dzięki rosnącej mocy obliczeniowej nowoczesnych urządzeń, rozwiązania takie przenoszą~się również na~platformy mobilne, dając perspektywę globalnej adaptacji metod opartych na~twarzy na~potrzeby identyfikacji i~weryfikacji tożsamości.
+
 \begin{thebibliography}{9}
+
+    \bibitem{cvg}
+        Computational Vision Group,
+        ,,Archive'',
+        California Institute of~Technology.
+        [Online]
+        \\
+        Dostępne: \url{http://www.vision.caltech.edu/html-files/archive.html}.
+        [Dostęp 12~maja~2019]
 
     \bibitem{dacosta2016}
         da~Costa-Luis, C. i~inni,
